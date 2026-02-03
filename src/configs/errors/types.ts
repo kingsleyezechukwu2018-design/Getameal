@@ -1,0 +1,1 @@
+export type HttpCode = 400 | 401 | 403 | 404 | 422 | 500;

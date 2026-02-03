@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "incremental": true,
+    "module": "commonjs",
+    "rootDir": "./src",
+    "outDir": "build",
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "resolveJsonModule": true,
+    "lib": ["es2020"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "baseUrl": "./src",
+    "rootDirs": []
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
