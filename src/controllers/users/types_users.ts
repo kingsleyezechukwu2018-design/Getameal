@@ -10,8 +10,3 @@ export enum UserRole {
   ADMIN = "ADMIN",
   COOK = "COOK",
 }
-
-
-export enum Country {
-  NG = "NG",
-}

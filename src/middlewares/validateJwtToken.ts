@@ -1,23 +1,23 @@
 import appConfig from "configs";
 import { NextFunction, Response } from "express";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import { IRequest, IToken } from "utils/types";
 
 const { jwtSecret } = appConfig;
 
-export const validateToken = async (
+export const validateJwtToken = async (
   req: IRequest,
   _res: Response,
   next: NextFunction,
 ) => {
-  let token = req.headers['authorization'] as string
+  let token = req.headers["authorization"] as string;
   token = token?.replace("Bearer ", "");
 
   if (!token) return next();
   try {
     const decoded = jwt.verify(token, jwtSecret);
     req.userId = (decoded as IToken).userId;
-    
+
     return next();
   } catch (err) {
     if (err.name) {
@@ -31,4 +31,3 @@ export const validateToken = async (
     next(err);
   }
 };
-
