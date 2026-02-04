@@ -4,6 +4,8 @@ import { UserEntity } from "models/users/users.entity";
 import { createOtp } from "controllers/otp";
 import { OtpType } from "controllers/otp/types_otp";
 import { verifyGoogleToken } from "configs/googleAuthLibrary";
+import { generateAccessToken, generateAppleClientSecret } from "./util_auth";
+import { axiosApi } from "utils/helpers";
 
 const logger = createLogger(ModuleType.Controller, "AUTH");
 
@@ -53,13 +55,46 @@ export async function googleAuth({ googleToken }: { googleToken: string }) {
     await UserEntity.createUser({ email });
   }
 
-  const otp = await createOtp(email, OtpType.AUTH);
-  //TODO: send email with otp code
+  let response;
+  response.user = user;
 
-  logger.info("otp sent to email", { email, otp });
-  return { message: "OTP code has been sent to your email" };
+  if (user.isComplete) {
+    const accessToken = generateAccessToken({
+      data: { userId: user.id, role: user.role },
+    });
+    response = { accessToken, ...response };
+  }
+
+  return response;
 }
 
-export async function appleAuth({ appleId }: { appleId: string }) {
-  
+export async function appleAuth({
+  appleIdToken,
+  code,
+}: {
+  appleIdToken: string;
+  code: string;
+}) {
+  const clientSecret = generateAppleClientSecret();
+
+  const tokenResponse = await axiosApi(
+    "https://appleid.apple.com/auth/token",
+    "post",
+    { headers: { "Content-Type": "application/x-www-form-urlencoded" } },
+    {
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: REDIRECT_URI, //route after successful sign-in
+      client_id: CLIENT_ID,
+      client_secret: clientSecret,
+    },
+  );
+
+  const { access_token, id_token, refresh_token } = tokenResponse.data;
+
+  // id_token is a JWT containing user's Apple ID info
+  // You can verify it using jsonwebtoken library
+  // Example:
+  const decoded = jwt.decode(id_token);
+  console.log(decoded); // contains sub (user id), email, etc.
 }

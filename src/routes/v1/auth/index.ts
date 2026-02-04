@@ -33,7 +33,7 @@ router.post(
 );
 
 router.post(
-  "/google",
+  "/google/callback",
   validateInput(googleAuthSchema),
   asyncWrapper(async (req: Request, res: Response, _next: NextFunction) => {
     const { googleToken } = req.body;

@@ -3,12 +3,23 @@ import geolib from "geolib";
 import { formatLocationFromCoords } from "configs/openStreetMap";
 import { UserLocationEntity } from "models/userLocations/user_location.entity";
 import { RouteError } from "configs/errors";
+import createLogger, { ModuleType } from "utils/logger";
+
+const logger = createLogger(ModuleType.Controller, "LOCATIONS");
 
 export async function getAllLocations() {
+  logger.info("retrieving all locations", {});
+
   const locations = await LocationEntity.getLocationsGroupedByState();
   return locations;
 }
 
+//TODO:Improve this function
+//update payload to take place, state, country instead of latitude and longitude
+//if location exist by place, state, country return that
+// else
+//-find location by place state country
+// -create new location
 export async function getLocation(latitude: number, longitude: number) {
   let location = await LocationEntity.findByCoordinates(latitude, longitude);
   if (location) {
@@ -40,8 +51,10 @@ export async function addUserLocation(
   latitude: number,
   longitude: number,
 ) {
+  logger.info("adding user location", { userId, latitude, longitude });
   const location = await LocationEntity.findByCoordinates(latitude, longitude);
   if (!location) {
+    logger.error("location not found", { userId, latitude, longitude });
     throw new RouteError("Location not found");
   }
 
@@ -56,6 +69,7 @@ export async function addUserLocation(
 export async function getUserLocation(userId: string) {
   const userLocation = await UserLocationEntity.getLocationByUserId(userId);
   if (!userLocation) {
+    logger.error("user location not found", { userId });
     throw new RouteError("User location not found");
   }
 
@@ -68,8 +82,16 @@ export async function isWithinRadius(
   longitude: number,
   radiusInMeters: number,
 ) {
+  logger.info("checking if user is within radius", {
+    userId,
+    latitude,
+    longitude,
+    radiusInMeters,
+  });
+
   const userLocation = await UserLocationEntity.getLocationByUserId(userId);
   if (!userLocation) {
+    logger.error("user location not found", { userId });
     throw new RouteError("User location not found");
   }
 
