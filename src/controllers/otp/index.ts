@@ -49,11 +49,11 @@ export async function verifyOtp(
 ): Promise<VerifyOtpResponse> {
   try {
     logger.info("otp verification request", { email, code, type });
-    let otp = await OtpEntity.findByParams({ email, type });
+    let otp = await OtpEntity.findByParams({ email, type, code });
 
-    if (!otp || otp.isUsed || otp.code !== code || otp.expireAt < new Date()) {
+    if (!otp || otp.isUsed || otp.expireAt < new Date()) {
       const error = new RouteError("Invalid OTP");
-      logger.info("otp verification failed", { email, code, error });
+      logger.info("otp verification failed", { email, otp, error });
 
       throw error;
     }
@@ -71,7 +71,9 @@ export async function verifyOtp(
 
       if (user && user.isComplete) {
         logger.info("generating access token for user", { user });
-        const accessToken = generateAccessToken({ data: { userId: user.id, role: user.role } });
+        const accessToken = generateAccessToken({
+          data: { userId: user.id, role: user.role },
+        });
         response = { accessToken, ...response };
       }
 
@@ -84,8 +86,18 @@ export async function verifyOtp(
   }
 }
 
-//TODO:
-//resend otp
-//call createOtp
-//send otp via email service (TODO)
-//return success message "otp has been sent to your email"
+export async function resendOtp(
+  email: string,
+  type: OtpType,
+): Promise<{ message: string }> {
+  try {
+    logger.info("otp resend request", { email, type });
+    const otp = await createOtp(email, type);
+    //TODO: send otp via email service (TODO)
+
+    logger.info("otp sent to email", { email, otp });
+    return { message: "OTP code has been sent to your email" };
+  } catch (error) {
+    throw error;
+  }
+}

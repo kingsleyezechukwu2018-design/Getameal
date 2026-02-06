@@ -1,7 +1,7 @@
 
 export interface JwtTokenPayload {
   data: { userId: string, role: string };
-  expiresIn?: string | number;
+  expiresIn?: string
   audience?: "web" | "app";
 }
 

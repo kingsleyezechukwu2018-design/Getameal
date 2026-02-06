@@ -10,11 +10,11 @@ const appConfig = {
   allowedOrigins: env.ALLOWED_ORIGINS?.split(",") || [],
   synchronizeOrm: env.SYNCHRONIZE_ORM || false,
   jwtSecret: env.JWT_SECRET,
-  jwtExpiresIn: env.JWT_EXPIRES_IN || 60,
+  jwtExpiresIn: env.JWT_EXPIRES_IN || "365d",
   //these hasn't been added to .env file yet
   mailgunApiKey: env.MAILGUN_API_KEY,
   mailgunDomain: env.MAILGUN_DOMAIN,
-  appEmail: env.APP_EMAIL,
+  appEmail: env.MAILGUN_APP_EMAIL,
   googleOAuthClientId: env.GOOGLE_OAUTH_CLIENT_ID || "",
 };
 

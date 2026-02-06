@@ -1,5 +1,5 @@
 import {
-  addUserLocation,
+  addUserLocationAndFullName,
   getAllLocations,
   getLocation,
   getUserLocation,
@@ -34,18 +34,22 @@ router.get(
   }),
 );
 
-router.use(validateJwtToken, requireAuth);
-
 router.post(
   "/user",
   validateInput(addUserLocationSchema),
-  asyncWrapper(async (req: IRequest, res: Response, _next: NextFunction) => {
-    const userId = req.userId;
-    const { lat, lng } = req.body;
-    const result = await addUserLocation(userId, Number(lat), Number(lng));
+  asyncWrapper(async (req: Request, res: Response, _next: NextFunction) => {
+    const { lat, lng, fullName, userId } = req.body;
+    const result = await addUserLocationAndFullName({
+      userId,
+      latitude: Number(lat),
+      longitude: Number(lng),
+      fullName,
+    });
     res.json(result);
   }),
 );
+
+router.use(validateJwtToken, requireAuth);
 
 router.get(
   "/user",

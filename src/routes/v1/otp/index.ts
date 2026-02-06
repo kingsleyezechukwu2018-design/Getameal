@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { validateInput } from "middlewares/validateInput";
 import { resendOtpSchema, verifyOtpSchema } from "./validation.otp";
-import { verifyOtp } from "controllers";
+import { resendOtp, verifyOtp } from "controllers";
 import { asyncWrapper } from "utils/helpers";
 
 const router = Router();
@@ -12,9 +12,9 @@ router.post(
   async (req, res, next) => {
     try {
       const { email, type } = req.body;
-      // const result = await resendOtp(email, type);
+      const result = await resendOtp(email, type);
 
-      // res.json(result);
+      res.json(result);
     } catch (error) {
       next(error);
     }

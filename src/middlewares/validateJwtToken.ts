@@ -1,13 +1,15 @@
 import appConfig from "configs";
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
+import createLogger, { ModuleType } from "utils/logger";
 import { IRequest, IToken } from "utils/types";
 
 const { jwtSecret } = appConfig;
+const logger = createLogger(ModuleType.Middleware, "AUTH");
 
 export const validateJwtToken = async (
   req: IRequest,
-  _res: Response,
+  res: Response,
   next: NextFunction,
 ) => {
   let token = req.headers["authorization"] as string;
@@ -18,16 +20,23 @@ export const validateJwtToken = async (
     const decoded = jwt.verify(token, jwtSecret);
     req.userId = (decoded as IToken).userId;
 
+    logger.info("decoded token", { decoded });
     return next();
   } catch (err) {
+    logger.error("error validating jwt token", { err });
+
     if (err.name) {
       if (err.name === "JsonWebTokenError") {
-        return next(Error("invalid token"));
+        res.status(401).json({ message: "invalid" });
+        return next({ message: "invalid token" });
       } else if (err.name === "TokenExpiredError") {
-        return next(Error("authentication expired. Please login again"));
+        res
+          .status(401)
+          .json({ message: "You have been logged out. Please login again" });
+        return next({ message: "authentication expired. Please login again" });
       }
     }
 
-    next(err);
+    next({ message: err.message || "Authentication error" });
   }
 };

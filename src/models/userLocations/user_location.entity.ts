@@ -38,7 +38,7 @@ export class UserLocationEntity extends BaseEntity {
       .select([
         "location.state AS state",
         "location.country AS country",
-        "location.place AS place",
+        "location.city AS city",
         "location.latitude AS latitude",
         "location.longitude AS longitude",
         "user_location.user_id AS userId",
@@ -47,5 +47,15 @@ export class UserLocationEntity extends BaseEntity {
       .getRawOne();
 
     return userLocation;
+  }
+
+  static async updateUserLocation(userId: string, locationId: string) {
+    return this.getRepository()
+      .createQueryBuilder()
+      .update(UserLocationEntity)
+      .set({ locationId })
+      .where("user_id = :userId", { userId })
+      .returning("*")
+      .execute();
   }
 }

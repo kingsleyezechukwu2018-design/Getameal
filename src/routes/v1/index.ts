@@ -8,7 +8,7 @@ const router = Router();
 
 router.use("/auth", authRoutes);
 router.use("/otp", otpRoutes);
-router.use("/location", locationRoutes);
+router.use("/locations", locationRoutes);
 router.use("/device-token", deviceTokenRoutes);
 
 export { router as v1Routes };

@@ -27,8 +27,8 @@ export class LocationEntity extends BaseEntity {
   @Column({ name: "state", type: "varchar", length: 255 })
   state: string;
 
-  @Column({ name: "place", type: "varchar", length: 255 })
-  place: string;
+  @Column({ name: "city", type: "varchar", length: 255 })
+  city: string;
 
   @CreateDateColumn({ name: "created_at", type: "timestamp with time zone" })
   createdAt: Date;
@@ -41,7 +41,7 @@ export class LocationEntity extends BaseEntity {
       .createQueryBuilder("location")
       .select("location.state", "state")
       .addSelect(
-        `json_agg(json_build_object('place', location.place, 'latitude', location.latitude, 'longitude', location.longitude))`,
+        `json_agg(json_build_object('city', location.city, 'latitude', location.latitude, 'longitude', location.longitude))`,
         "places",
       )
       .groupBy("location.state")
@@ -51,14 +51,14 @@ export class LocationEntity extends BaseEntity {
     //   {
     //     state: "California",
     //     places: [
-    //       { place: "Los Angeles", latitude: 34.0522, longitude: -118.2437 },
-    //       { place: "San Francisco", latitude: 37.7749, longitude: -122.4194 },
+    //       { city: "Los Angeles", latitude: 34.0522, longitude: -118.2437 },
+    //       { city: "San Francisco", latitude: 37.7749, longitude: -122.4194 },
     //     ],
     //   },
     // ];
     return locations.map((loc) => ({
       state: loc.state,
-      places: loc.places, // Each place: { place, latitude, longitude }
+      places: loc.places, // Each place: { city, latitude, longitude }
     }));
   }
 

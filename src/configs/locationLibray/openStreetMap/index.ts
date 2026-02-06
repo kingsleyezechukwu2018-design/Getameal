@@ -3,25 +3,26 @@ import { axiosApi } from "utils/helpers";
 export const formatLocationFromCoords = async (lat: string, lng) => {
   const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`;
 
-  const res = await axiosApi(url, "get", { "User-Agent": "GetAMeal Server" });
+  const res = await axiosApi(url, "get", {
+    headers: { "User-Agent": "GetAMeal/1.0 (getameal@gmail.com)" },
+  });
   console.log("location response:", res);
 
-  const data = await res.json();
-  const address = data.address || {};
+  const address = res.address || {};
 
-  const place =
+  const city =
+    address.city ||
     address.suburb ||
     address.neighbourhood ||
     address.city_district ||
-    address.town ||
-    address.city;
+    address.town;
 
   const state = address.state;
   const country = address.country;
 
   return {
-    place,
+    city,
     state,
     country,
-  }
+  };
 };

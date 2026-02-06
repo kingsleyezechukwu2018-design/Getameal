@@ -7,7 +7,9 @@
     "dev": "ts-node-dev --transpile-only --respawn --exit-child --clear -r tsconfig-paths/register src/index.ts",
     "build": "tsc && tsc-alias",
     "start:dev": "pnpm run build && node build/index.js",
-    "start": "node build/index.js"
+    "start": "node build/index.js",
+    "migration:generate": "typeorm-ts-node-commonjs migration:generate -d src/models/datasource.ts src/migrations/etge",
+    "migration:run": "typeorm migration:run"
   },
   "keywords": [],
   "author": "",
@@ -39,6 +41,7 @@
     "@types/node": "^24.2.0",
     "eslint": "^9.39.2",
     "globals": "^17.2.0",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",

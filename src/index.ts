@@ -2,7 +2,7 @@ import app from "configs/app";
 import appConfig from "./configs";
 import createLogger, { ModuleType } from "utils/logger";
 import { createDbConnection } from "models/dbConnection";
-import "configs/firebase";
+import "configs/notificationLibrary/firebase";
 
 const logger = createLogger(ModuleType.Entry, "ENTRY");
 
