@@ -19,6 +19,7 @@ const router = Router();
 router.get(
   "/all",
   asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    //TODO: add pagination
     const result = await getAllLocations();
     res.json(result);
   }),

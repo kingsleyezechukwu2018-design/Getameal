@@ -8,7 +8,7 @@
     "build": "tsc && tsc-alias",
     "start:dev": "pnpm run build && node build/index.js",
     "start": "node build/index.js",
-    "migration:generate": "typeorm-ts-node-commonjs migration:generate -d src/models/datasource.ts src/migrations/etge",
+    "migration:generate": "NODE_PATH=src ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate src/migrations/migration -d src/models/datasource",
     "migration:run": "typeorm migration:run"
   },
   "keywords": [],

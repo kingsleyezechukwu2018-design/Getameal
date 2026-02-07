@@ -14,6 +14,6 @@ export const AppDataSource = new DataSource({
   synchronize: isDev && !!synchronizeOrm, // (dev only, don't ever turn on in production!)
   logging: false,
   entities: [join(__dirname, "**", "*.entity.{ts,js}")],
-  migrations: [join(__dirname, "../migrations", "*.{ts,js}")],
+  migrations: ["src/migrations/*.{ts,js}"],
   //TODO: add cache
 });
