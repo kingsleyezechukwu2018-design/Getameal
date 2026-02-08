@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import * as config from "./datasource";
+import { AppDataSource } from "./datasource";
 
 let connection: DataSource;
 
@@ -11,6 +11,7 @@ export async function closeDbConnection(): Promise<void> {
 
 export async function createDbConnection(): Promise<DataSource> {
   await closeDbConnection();
-  connection = await config.AppDataSource.initialize();
+  
+  connection = await AppDataSource.initialize();
   return connection;
 }
