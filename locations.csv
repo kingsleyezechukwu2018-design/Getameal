@@ -1,0 +1,239 @@
+latitude,longitude,city,state,country
+5.5243165,7.4933142,Umuahia,Abia,Nigeria
+5.1215877,7.3732655,Aba,Abia,Nigeria
+5.3844563,7.8867446,Arochukwu,Abia,Nigeria
+5.6432006,7.8398551,Ohafia,Abia,Nigeria
+5.5570426,7.6304012,Amaeke,Abia,Nigeria
+5.2868186,7.4165053,Isiala-Ngwa North,Abia,Nigeria
+5.2049035,7.330053,Osisioma Ngwa,Abia,Nigeria
+4.9165104,7.2437105,Ukwa West,Abia,Nigeria
+9.2070251,12.4901854,Yola,Adamawa,Nigeria
+10.2691511,13.2530558,Mubi,Adamawa,Nigeria
+9.4535964,12.0318456,Numan,Adamawa,Nigeria
+9.2716518,12.4528907,Jimeta,Adamawa,Nigeria
+8.4605201,12.052549,Ganye,Adamawa,Nigeria
+10.1558887,12.7368452,Gombi,Adamawa,Nigeria
+10.2300928,12.9262851,Hong,Adamawa,Nigeria
+5.0377396,7.9127945,Uyo,Akwa Ibom,Nigeria
+5.1744472,7.7145152,Ikot Ekpene,Akwa Ibom,Nigeria
+4.6467365,7.9429421,Eket,Akwa Ibom,Nigeria
+4.807369,8.2377049,Oron,Akwa Ibom,Nigeria
+5.0032857,7.7742702,Abak,Akwa Ibom,Nigeria
+4.5739124,7.5788975,Ikot Abasi,Akwa Ibom,Nigeria
+4.842716,7.8558357,Etinan,Akwa Ibom,Nigeria
+6.2220043,7.0821162,Awka,Anambra,Nigeria
+6.1329419,6.7923994,Onitsha,Anambra,Nigeria
+6.0105192,6.9103455,Nnewi,Anambra,Nigeria
+6.0256442,7.0770727,Ekwulobia,Anambra,Nigeria
+6.0085842,7.1009488,Aguata,Anambra,Nigeria
+5.8516439,6.8511814,Ihiala,Anambra,Nigeria
+6.1462401,6.8297403,Nkpor,Anambra,Nigeria
+10.3059966,9.8403959,Bauchi,Bauchi,Nigeria
+11.6726385,10.2039477,Azare,Bauchi,Nigeria
+11.313985,10.465234,Misau,Bauchi,Nigeria
+12.2856589,10.348386,Katagum,Bauchi,Nigeria
+11.0716348,9.5729115,Ningi,Bauchi,Nigeria
+9.7560479,9.5562219,Tafawa Balewa,Bauchi,Nigeria
+4.9514468,6.3491975,Yenagoa,Bayelsa,Nigeria
+4.3077728,6.2455597,Brass,Bayelsa,Nigeria
+5.1593251,6.1971218,Sagbama,Bayelsa,Nigeria
+4.6901388,6.3212780,Ogbia,Bayelsa,Nigeria
+4.5328134,6.4037428,Nembe,Bayelsa,Nigeria
+4.9730872,6.1089697,Amassoma,Bayelsa,Nigeria
+7.7321516,8.539144,Makurdi,Benue,Nigeria
+7.3368424,9.0018424,Gboko,Benue,Nigeria
+7.1908532,8.1323138,Otukpo,Benue,Nigeria
+7.1657856,9.2841023,Katsina Ala,Benue,Nigeria
+6.7835394,9.0695492,Vande Ikya,Benue,Nigeria
+6.887796,9.2314492,Adikpo,Benue,Nigeria
+11.8310981,13.1509672,Maiduguri,Borno,Nigeria
+11.5218308,13.6883765,Bama,Borno,Nigeria
+10.6116811,12.1918637,Biu,Borno,Nigeria
+11.0897215,13.6883765,Gwoza,Borno,Nigeria
+12.6729174,13.616014,Monguno,Borno,Nigeria
+11.1560843,12.7566109,Damboa,Borno,Nigeria
+4.9757165,8.3417006,Calabar,Cross River,Nigeria
+5.9616504,8.7205877,Ikom,Cross River,Nigeria
+5.8066339,8.0765288,Ugep,Cross River,Nigeria
+6.6548369,8.7976937,Ogoja,Cross River,Nigeria
+6.6693528,9.1622211,Obudu,Cross River,Nigeria
+5.3189793,8.349917,Akamkpa,Cross River,Nigeria
+6.2059295,6.6958939,Asaba,Delta,Nigeria
+5.5493807,5.7665824,Warri,Delta,Nigeria
+5.8750769,5.6931356,Sapele,Delta,Nigeria
+5.5001866,5.9938339,Ughelli,Delta,Nigeria
+6.2576112,6.1817726,Agbor,Delta,Nigeria
+5.7108535,6.4413118,Kwale,Delta,Nigeria
+5.5447242,6.2322852,Ozoro,Delta,Nigeria
+6.3230608,8.1120116,Abakaliki,Ebonyi,Nigeria
+5.891094,7.9306863,Afikpo,Ebonyi,Nigeria
+6.1812521,8.0472004,Ezza,Ebonyi,Nigeria
+6.3907251,7.8286368,Ishielu,Ebonyi,Nigeria
+6.1323473,8.0219738,Onueke,Ebonyi,Nigeria
+6.334986,5.6037465,Benin City,Edo,Nigeria
+7.0668645,6.2747734,Auchi,Edo,Nigeria
+6.7429546,6.1420947,Ekpoma,Edo,Nigeria
+6.7139748,6.3279244,Uromi,Edo,Nigeria
+7.2754704,6.107645,Igarra,Edo,Nigeria
+6.6493305,6.3917654,Ubiaja,Edo,Nigeria
+7.6124263,5.2371087,Ado Ekiti,Ekiti,Nigeria
+7.4985030,5.2330491,Ikere-Ekiti,Ekiti,Nigeria
+7.6650527,5.1301772,Igede-Ekiti,Ekiti,Nigeria
+7.8119593,5.0676766,Ijero,Ekiti,Nigeria
+7.4645092,5.4201377,Ise,Ekiti,Nigeria
+7.7913136,5.5114564,Ikole,Ekiti,Nigeria
+6.4482701,7.5138947,Enugu,Enugu,Nigeria
+6.8429422,7.3732655,Nsukka,Enugu,Nigeria
+6.2536784,7.2733783,Oji River,Enugu,Nigeria
+6.3092002,7.5533757,Agbani,Enugu,Nigeria
+6.4817502,7.394882,Udi,Enugu,Nigeria
+6.3845781,7.2914214,Ezeagu,Enugu,Nigeria
+9.0562646,7.4985259,Abuja,Federal Capital Territory,Nigeria
+8.9508329,7.0767365,Gwagwalada,Federal Capital Territory,Nigeria
+8.8797113,7.2293520,Kuje,Federal Capital Territory,Nigeria
+9.2826357,7.3857553,Bwari,Federal Capital Territory,Nigeria
+8.8402544,7.0538774,Kwali,Federal Capital Territory,Nigeria
+8.4746755,6.9450688,Abaji,Federal Capital Territory,Nigeria
+10.279142,11.1730615,Gombe,Gombe,Nigeria
+10.0496349,11.1996859,Kumo,Gombe,Nigeria
+10.8229629,10.7732854,Dukku,Gombe,Nigeria
+9.8201485,11.3119092,Kaltungo,Gombe,Nigeria
+9.8661603,11.2194405,Billiri,Gombe,Nigeria
+5.5096455,7.0390904,Owerri,Imo,Nigeria
+5.8358102,7.0196035,Orlu,Imo,Nigeria
+5.8310207,7.3942063,Okigwe,Imo,Nigeria
+5.7213174,6.8280655,Oguta,Imo,Nigeria
+5.5379261,7.286868,Mbaise,Imo,Nigeria
+5.7647948,7.0982581,Nkwerre,Imo,Nigeria
+11.7159714,9.3556736,Dutse,Jigawa,Nigeria
+12.4572315,10.040849,Hadejia,Jigawa,Nigeria
+12.6226118,9.3839598,Gumel,Jigawa,Nigeria
+12.6532933,8.4120775,Kazaure,Jigawa,Nigeria
+12.2852094,9.4729757,Ringim,Jigawa,Nigeria
+11.4530865,9.475603,Birnin Kudu,Jigawa,Nigeria
+10.503644,7.4337395,Kaduna,Kaduna,Nigeria
+11.1047395,7.7206606,Zaria,Kaduna,Nigeria
+9.5848982,8.2924213,Kafanchan,Kaduna,Nigeria
+9.607412,8.3882723,Kagoro,Kaduna,Nigeria
+10.4164961,8.6813759,Saminaka,Kaduna,Nigeria
+9.8734418,7.9551999,Kachia,Kaduna,Nigeria
+12.0021794,8.5919561,Kano,Kano,Nigeria
+11.7942415,8.8390321,Wudil,Kano,Nigeria
+12.2312766,8.2404397,Bichi,Kano,Nigeria
+11.862577,8.9990801,Gaya,Kano,Nigeria
+11.5610083,8.581717,Rano,Kano,Nigeria
+11.531421,8.9548963,Sumaila,Kano,Nigeria
+12.9815608,7.6222665,Katsina,Katsina,Nigeria
+13.0314945,8.3225325,Daura,Katsina,Nigeria
+11.5184818,7.3129299,Funtua,Katsina,Nigeria
+12.462174,7.8286368,Kankia,Katsina,Nigeria
+11.7928739,7.6168439,Malumfashi,Katsina,Nigeria
+12.4418579,7.4908876,Dutsin-Ma,Katsina,Nigeria
+12.4317585,4.1956212,Birnin Kebbi,Kebbi,Nigeria
+12.7494718,4.5366582,Argungu,Kebbi,Nigeria
+12.2257507,4.3822109,Jega,Kebbi,Nigeria
+10.9924545,4.5211935,Yauri,Kebbi,Nigeria
+11.4384457,5.2318879,Zuru,Kebbi,Nigeria
+7.8023204,6.733343,Lokoja,Kogi,Nigeria
+7.5614184,6.2429045,Okene,Kogi,Nigeria
+7.8240606,6.0736499,Kabba,Kogi,Nigeria
+7.1138119,6.7440467,Idah,Kogi,Nigeria
+7.4053197,7.6222665,Ankpa,Kogi,Nigeria
+7.6919765,7.0471556,Dekina,Kogi,Nigeria
+8.5373356,4.5443923,Ilorin,Kwara,Nigeria
+8.1393408,4.7174062,Offa,Kwara,Nigeria
+9.1192516,4.8261424,Jebba,Kwara,Nigeria
+8.8525279,5.4044268,Lafiagi,Kwara,Nigeria
+8.721124,5.7563151,Pategi,Kwara,Nigeria
+8.8228182,4.9688589,Share,Kwara,Nigeria
+6.601838,3.3514863,Ikeja,Lagos,Nigeria
+6.4280556,3.4219444,Victoria Island,Lagos,Nigeria
+6.4330474,3.4821942,Lekki,Lagos,Nigeria
+6.498293,3.348572,Surulere,Lagos,Nigeria
+6.45,3.433333,Ikoyi,Lagos,Nigeria
+6.5095442,3.3710936,Yaba,Lagos,Nigeria
+6.45528,3.3640841,Apapa,Lagos,Nigeria
+6.4702531,3.2818048,Festac Town,Lagos,Nigeria
+6.4683134,3.5655375,Ajah,Lagos,Nigeria
+6.4182673,2.8901388,Badagry,Lagos,Nigeria
+6.5866632,3.9699874,Epe,Lagos,Nigeria
+6.6194131,3.5104537,Ikorodu,Lagos,Nigeria
+6.535233,3.3489671,Mushin,Lagos,Nigeria
+6.535498,3.3086778,Oshodi,Lagos,Nigeria
+6.5355258,3.3266382,Isolo,Lagos,Nigeria
+6.6179731,3.3208916,Agege,Lagos,Nigeria
+6.5744462,3.2569872,Alimosho,Lagos,Nigeria
+6.4579097,3.1579655,Ojo,Lagos,Nigeria
+6.4293017,3.2684215,Amuwo Odofin,Lagos,Nigeria
+6.5777472,3.3884886,Kosofe,Lagos,Nigeria
+6.4548791,3.4245984,Lagos Island,Lagos,Nigeria
+6.4589849,3.6015207,Eti-Osa,Lagos,Nigeria
+6.6849677,3.2885455,Ifako-Ijaiye,Lagos,Nigeria
+6.539173,3.3841676,Somolu,Lagos,Nigeria
+8.5060115,8.5226706,Lafia,Nasarawa,Nigeria
+8.8471213,7.8776023,Keffi,Nasarawa,Nigeria
+8.9066616,8.4074573,Akwanga,Nasarawa,Nigeria
+8.5474692,7.7118003,Nasarawa,Nasarawa,Nigeria
+8.400857,8.3581344,Doma,Nasarawa,Nigeria
+9.5835546,6.5463156,Minna,Niger,Nigeria
+9.0796794,6.0097018,Bida,Niger,Nigeria
+10.407146,5.4699173,Kontagora,Niger,Nigeria
+9.1701391,7.1860979,Suleja,Niger,Nigeria
+9.2928248,5.0546643,Mokwa,Niger,Nigeria
+9.0492688,6.5796733,Lapai,Niger,Nigeria
+7.147502,3.3619356,Abeokuta,Ogun,Nigeria
+6.8248815,3.9191404,Ijebu Ode,Ogun,Nigeria
+6.8322014,3.6319131,Sagamu,Ogun,Nigeria
+6.8953645,3.0125674,Ilaro,Ogun,Nigeria
+6.6926435,3.236561,Ota,Ogun,Nigeria
+6.9792351,3.9980485,Ijebu Igbo,Ogun,Nigeria
+7.2571325,5.2057909,Akure,Ondo,Nigeria
+7.1000051,4.8416936,Ondo,Ondo,Nigeria
+7.1988510,5.593239,Owo,Ondo,Nigeria
+7.5248063,5.7668515,Ikare-Akoko,Ondo,Nigeria
+6.7518524,4.8779969,Ore,Ondo,Nigeria
+6.5039809,4.7706762,Okitipupa,Ondo,Nigeria
+7.7826709,4.5418141,Osogbo,Osun,Nigeria
+7.490462,4.5521274,Ile-Ife,Osun,Nigeria
+7.7304127,4.4377033,Ede,Osun,Nigeria
+7.6103457,4.7096476,Ilesa,Osun,Nigeria
+7.6401303,4.1769749,Iwo,Osun,Nigeria
+7.3699703,4.1872178,Ikire,Osun,Nigeria
+7.3775355,3.9470396,Ibadan,Oyo,Nigeria
+8.1227496,4.2435893,Ogbomosho,Oyo,Nigeria
+7.8429579,3.9368439,Oyo,Oyo,Nigeria
+7.9764931,3.5913939,Iseyin,Oyo,Nigeria
+8.6725571,3.394332,Shaki,Oyo,Nigeria
+8.8340741,3.7587457,Igboho,Oyo,Nigeria
+9.8965273,8.8583309,Jos,Plateau,Nigeria
+9.3191794,9.4417456,Pankshin,Plateau,Nigeria
+8.8955221,9.4537243,Shendam,Plateau,Nigeria
+9.5625527,8.9687011,Barkin Ladi,Plateau,Nigeria
+9.7310898,8.7935611,Vom,Plateau,Nigeria
+9.7652591,8.8597095,Bukuru,Plateau,Nigeria
+4.8472226,6.974604,Port Harcourt,Rivers,Nigeria
+4.4295108,7.1951913,Bonny,Rivers,Nigeria
+5.0828166,6.6584666,Ahoada,Rivers,Nigeria
+4.6573635,7.3779935,Bori,Rivers,Nigeria
+4.7553743,6.766798,Degema,Rivers,Nigeria
+4.5133701,7.5284473,Opobo,Rivers,Nigeria
+13.0058731,5.2475518,Sokoto,Sokoto,Nigeria
+12.3491698,4.8520636,Tambuwal,Sokoto,Nigeria
+13.3539251,5.2344983,Gwadabawa,Sokoto,Nigeria
+13.7273187,5.2971826,Illela,Sokoto,Nigeria
+12.8442883,5.1510261,Bodinga,Sokoto,Nigeria
+8.8928524,11.3771496,Jalingo,Taraba,Nigeria
+7.877332,9.7790227,Wukari,Taraba,Nigeria
+7.8533039,10.9637456,Bali,Taraba,Nigeria
+6.7205676,11.2580472,Gembu,Taraba,Nigeria
+7.2576942,9.9744535,Takum,Taraba,Nigeria
+11.7469961,11.9661922,Damaturu,Yobe,Nigeria
+11.7072355,11.0824912,Potiskum,Yobe,Nigeria
+12.8676459,11.0374346,Gashua,Yobe,Nigeria
+12.8813175,10.4474997,Nguru,Yobe,Nigeria
+12.8934904,11.9291015,Geidem,Yobe,Nigeria
+12.1628466,6.6745042,Gusau,Zamfara,Nigeria
+12.5951892,6.5863469,Kaura Namoda,Zamfara,Nigeria
+12.5608427,6.0752005,Talata Mafara,Zamfara,Nigeria
+12.10869,5.9277625,Anka,Zamfara,Nigeria
+11.3661846,6.3226072,Maru,Zamfara,Nigeria

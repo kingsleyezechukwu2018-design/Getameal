@@ -77,4 +77,5 @@ export class LocationEntity extends BaseEntity {
   static async createLocation(params: Partial<LocationEntity>) {
     return this.getRepository().save(params);
   }
+
 }
