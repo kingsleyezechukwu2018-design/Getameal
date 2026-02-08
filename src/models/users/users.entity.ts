@@ -42,18 +42,12 @@ export class UserEntity extends BaseEntity {
     return this.getRepository().save(data);
   }
 
-  static async getUser(
-    criteria: FindOptionsWhere<UserEntity>,
-  ): Promise<UserEntity> {
-    return this.findOne({ where: criteria });
-  }
-
   static async updateUser(
     criteria: FindOptionsWhere<UserEntity>,
     data: Partial<UserEntity>,
   ): Promise<UserEntity> {
     await this.getRepository().update(criteria, data);
-    const user = await this.getUser(criteria);
+    const user = await this.findByParams(criteria);
 
     return user;
   }

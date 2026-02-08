@@ -68,33 +68,33 @@ export async function googleAuth({ googleToken }: { googleToken: string }) {
   return response;
 }
 
-export async function appleAuth({
-  appleIdToken,
-  code,
-}: {
-  appleIdToken: string;
-  code: string;
-}) {
-  const clientSecret = generateAppleClientSecret();
+// export async function appleAuth({
+//   appleIdToken,
+//   code,
+// }: {
+//   appleIdToken: string;
+//   code: string;
+// }) {
+//   const clientSecret = generateAppleClientSecret();
 
-  const tokenResponse = await axiosApi(
-    "https://appleid.apple.com/auth/token",
-    "post",
-    { headers: { "Content-Type": "application/x-www-form-urlencoded" } },
-    {
-      grant_type: "authorization_code",
-      code,
-      redirect_uri: REDIRECT_URI, //route after successful sign-in
-      client_id: CLIENT_ID,
-      client_secret: clientSecret,
-    },
-  );
+//   const tokenResponse = await axiosApi(
+//     "https://appleid.apple.com/auth/token",
+//     "post",
+//     { headers: { "Content-Type": "application/x-www-form-urlencoded" } },
+//     {
+//       grant_type: "authorization_code",
+//       code,
+//       redirect_uri: REDIRECT_URI, //route after successful sign-in
+//       client_id: CLIENT_ID,
+//       client_secret: clientSecret,
+//     },
+//   );
 
-  const { access_token, id_token, refresh_token } = tokenResponse.data;
+//   const { access_token, id_token, refresh_token } = tokenResponse.data;
 
-  // id_token is a JWT containing user's Apple ID info
-  // You can verify it using jsonwebtoken library
-  // Example:
-  const decoded = jwt.decode(id_token);
-  console.log(decoded); // contains sub (user id), email, etc.
-}
+//   // id_token is a JWT containing user's Apple ID info
+//   // You can verify it using jsonwebtoken library
+//   // Example:
+//   const decoded = jwt.decode(id_token);
+//   console.log(decoded); // contains sub (user id), email, etc.
+// }

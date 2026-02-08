@@ -7,9 +7,7 @@ import {
   BaseEntity,
   FindOptionsWhere,
 } from "typeorm";
-
-export type QuantityUnit = "litre" | "pieces" | "packs";
-export type DeliveryOption = "pickup" | "delivery" | "both";
+import { DeliveryOption, QuantityUnit } from "./types_meal_entity";
 
 @Entity({ name: "meals" })
 export class MealEntity extends BaseEntity {

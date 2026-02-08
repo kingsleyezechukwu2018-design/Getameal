@@ -1,3 +1,4 @@
+import { DeliveryOption } from "models/meal/types_meal_entity";
 import { OrderItemEntity } from "models/order_items/order_item.entity";
 import {
   Entity,
@@ -26,6 +27,13 @@ export class OrderEntity extends BaseEntity {
 
   @Column({ name: "unit_price", type: "float" })
   unitPrice: number;
+
+  @Column({
+    name: "delivery_option",
+    type: "enum",
+    enum: ["pickup", "delivery"],
+  })
+  deliveryOption: DeliveryOption
 
   @CreateDateColumn({ name: "created_at", type: "timestamp with time zone" })
   createdAt: Date;

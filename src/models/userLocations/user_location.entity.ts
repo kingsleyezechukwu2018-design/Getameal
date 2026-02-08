@@ -1,4 +1,5 @@
 import { LocationEntity } from "models/location/location.entity";
+import { UserEntity } from "models/users/users.entity";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -57,5 +58,35 @@ export class UserLocationEntity extends BaseEntity {
       .where("user_id = :userId", { userId })
       .returning("*")
       .execute();
+  }
+
+  static async getCooksNearby(latitude: number, longitude: number) {
+    const cooks = await this.getRepository()
+      .createQueryBuilder("user_location")
+      .innerJoin(LocationEntity, "location")
+      .innerJoin(UserEntity, "user", "user.id = user_location.user_id")
+      .innerJoin("meal", "meal", "meal.user_id = user.id")
+      .select([
+        "user.id AS id",
+        "user.full_name AS cook_fullName",
+        "location.city AS city",
+        "location.state AS state",
+        "location.country AS country",
+        "meal.id AS mealId",
+        "meal.name AS mealName",
+        "meal.description AS mealDescription",
+        "meal.price AS mealPrice",
+      ])
+      .where(
+        `ST_DistanceSphere(
+          ST_MakePoint(location.longitude, location.latitude),
+          ST_MakePoint(:longitude, :latitude)
+        ) <= :radius`,
+        { latitude, longitude, radius: 5000 },
+      )
+      .andWhere("user.role = 'COOK'")
+      .getRawMany();
+
+    return cooks;
   }
 }

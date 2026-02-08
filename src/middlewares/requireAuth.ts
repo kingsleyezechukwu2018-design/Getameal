@@ -14,7 +14,7 @@ export const requireAuth = async (
     }
 
     const user = await UserEntity.findByParams({ id: req.userId });
-    if (!user) {
+    if (!user || !user.isComplete) {
       throw new RouteError("authorization failed");
     }
 
@@ -23,4 +23,3 @@ export const requireAuth = async (
     next(err);
   }
 };
-
