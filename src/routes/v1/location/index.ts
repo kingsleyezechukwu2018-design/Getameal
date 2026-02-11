@@ -9,6 +9,7 @@ import { validateInput } from "middlewares/validateInput";
 import { asyncWrapper } from "utils/helpers";
 import {
   addUserLocationSchema,
+  getAllLocationsSchema,
   getLocationSchema,
 } from "./validation.location";
 import { IRequest } from "utils/types";
@@ -18,9 +19,14 @@ const router = Router();
 
 router.get(
   "/all",
+  validateInput(getAllLocationsSchema, "query"),
   asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    //TODO: add pagination
-    const result = await getAllLocations();
+    const { page, per_page } = req.query;
+
+    const result = await getAllLocations({
+      page: Number(page),
+      per_page: Number(per_page),
+    });
     res.json(result);
   }),
 );
@@ -39,12 +45,13 @@ router.post(
   "/user",
   validateInput(addUserLocationSchema),
   asyncWrapper(async (req: Request, res: Response, _next: NextFunction) => {
-    const { lat, lng, fullName, userId } = req.body;
+    const { lat, lng, fullName, userId, loginOption } = req.body;
     const result = await addUserLocationAndFullName({
       userId,
       latitude: Number(lat),
       longitude: Number(lng),
       fullName,
+      loginOption,
     });
     res.json(result);
   }),

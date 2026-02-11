@@ -9,8 +9,12 @@ const appConfig = {
   databaseUri: env.DATABASE_URL || "",
   allowedOrigins: env.ALLOWED_ORIGINS?.split(",") || [],
   synchronizeOrm: env.SYNCHRONIZE_ORM || false,
-  jwtSecret: env.JWT_SECRET,
-  jwtExpiresIn: env.JWT_EXPIRES_IN || "365d",
+
+  jwtAccessTokenSecret: env.JWT_ACCESS_TOKEN_SECRET,
+  jwtAccessTokenExpiresIn: env.JWT_ACCESS_TOKEN_EXPIRES_IN || "1d",
+  jwtRefreshTokenSecret: env.JWT_REFRESH_TOKEN_SECRET,
+  jwtRefreshTokenExpiresIn: env.JWT_REFRESH_TOKEN_EXPIRES_IN || "60d",
+
   //these hasn't been added to .env file yet
   mailgunApiKey: env.MAILGUN_API_KEY,
   mailgunDomain: env.MAILGUN_DOMAIN,

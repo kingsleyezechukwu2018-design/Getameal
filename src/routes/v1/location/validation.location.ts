@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { LoginOption } from "models/auth/auth.entity";
 
 export const getLocationSchema = Joi.object({
   lat: Joi.number().required().min(-90).max(90).messages({
@@ -16,8 +17,16 @@ export const getLocationSchema = Joi.object({
 });
 
 export const addUserLocationSchema = Joi.object({
-  userId: Joi.string().uuid().required(),
-  lat: Joi.number().required().min(-90).max(90),
-  lng: Joi.number().required().min(-180).max(180),
-  fullName: Joi.string()
+  userId: Joi.string().uuid().required().required(),
+  lat: Joi.number().required().min(-90).max(90).required(),
+  lng: Joi.number().required().min(-180).max(180).required(),
+  fullName: Joi.string().required(),
+  loginOption: Joi.string()
+    .valid(...Object.values(LoginOption))
+    .required(),
+});
+
+export const getAllLocationsSchema = Joi.object({
+  page: Joi.number().integer().min(1).default(1),
+  per_page: Joi.number().integer().min(1).max(100).default(20),
 });

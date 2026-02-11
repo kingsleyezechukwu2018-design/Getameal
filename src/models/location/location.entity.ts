@@ -36,29 +36,29 @@ export class LocationEntity extends BaseEntity {
   @UpdateDateColumn({ name: "updated_at", type: "timestamp with time zone" })
   updatedAt: Date;
 
-  static async getLocationsGroupedByState() {
+  static async getLocationsGroupedByState({
+    limit,
+    skip,
+  }: {
+    limit: number;
+    skip: number;
+  }) {
     const locations = await this.getRepository()
       .createQueryBuilder("location")
       .select("location.state", "state")
       .addSelect(
         `json_agg(json_build_object('city', location.city, 'latitude', location.latitude, 'longitude', location.longitude))`,
-        "places",
+        "cities",
       )
       .groupBy("location.state")
+      .orderBy("location.createdAt", "DESC")
+      .skip(skip)
+      .take(limit)
       .getRawMany();
 
-    //sample response: [
-    //   {
-    //     state: "California",
-    //     places: [
-    //       { city: "Los Angeles", latitude: 34.0522, longitude: -118.2437 },
-    //       { city: "San Francisco", latitude: 37.7749, longitude: -122.4194 },
-    //     ],
-    //   },
-    // ];
     return locations.map((loc) => ({
       state: loc.state,
-      places: loc.places, // Each place: { city, latitude, longitude }
+      cities: loc.cities,
     }));
   }
 
@@ -77,5 +77,4 @@ export class LocationEntity extends BaseEntity {
   static async createLocation(params: Partial<LocationEntity>) {
     return this.getRepository().save(params);
   }
-
 }

@@ -3,14 +3,15 @@ import { JwtTokenPayload } from "controllers/users/types_users";
 import appConfig from "configs";
 import fs from "fs";
 
-const { jwtExpiresIn, jwtSecret } = appConfig;
+const { jwtAccessTokenExpiresIn, jwtAccessTokenSecret } = appConfig;
 
-export function generateAccessToken({
+export function generateToken({
   data,
-  expiresIn = jwtExpiresIn,
+  expiresIn = jwtAccessTokenExpiresIn,
   audience = "app",
+  secret = jwtAccessTokenSecret,
 }: JwtTokenPayload): string {
-  return jwt.sign(data, jwtSecret, {
+  return jwt.sign(data, secret, {
     expiresIn: expiresIn as any,
     issuer: `getameal`,
     audience: `${audience}-user`,

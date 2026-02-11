@@ -5,14 +5,27 @@ import { UserLocationEntity } from "models/userLocations/user_location.entity";
 import { RouteError } from "configs/errors";
 import createLogger, { ModuleType } from "utils/logger";
 import { UserEntity } from "models/users/users.entity";
-import { generateAccessToken } from "controllers/auth/util_auth";
+import { completedUserLoginResponse } from "controllers/auth";
+import { AuthEntity, LoginOption } from "models/auth/auth.entity";
+import { handlePaginate } from "utils";
 
 const logger = createLogger(ModuleType.Controller, "LOCATIONS");
 
-export async function getAllLocations() {
-  logger.info("retrieving all locations", {});
+export async function getAllLocations({
+  page,
+  per_page,
+}: {
+  page?: number;
+  per_page?: number;
+}) {
+  logger.info("retrieving all locations", { page, per_page });
 
-  const locations = await LocationEntity.getLocationsGroupedByState();
+  const { skip, limit } = handlePaginate({ page, per_page });
+
+  const locations = await LocationEntity.getLocationsGroupedByState({
+    skip,
+    limit,
+  });
   return locations;
 }
 
@@ -62,17 +75,20 @@ export async function addUserLocationAndFullName({
   latitude,
   longitude,
   fullName,
+  loginOption,
 }: {
   userId: string;
   latitude: number;
   longitude: number;
   fullName: string;
+  loginOption: LoginOption;
 }) {
   logger.info("add user location request", {
     userId,
     latitude,
     longitude,
     fullName,
+    loginOption,
   });
 
   let user = await UserEntity.findByParams({ id: userId });
@@ -91,14 +107,8 @@ export async function addUserLocationAndFullName({
 
   let userLocation = await UserLocationEntity.getLocationByUserId(userId);
   if (userLocation && user.isComplete) {
-    const accessToken = generateAccessToken({
-      data: { userId: user.id, role: user.role },
-    });
-
-    logger.info("user location already exists and account is completed", {
-      userId,
-    });
-    return { accessToken, user };
+    const response = await completedUserLoginResponse(user, loginOption);
+    return response;
   }
 
   if (userLocation) {
@@ -113,12 +123,13 @@ export async function addUserLocationAndFullName({
     }).save();
   }
 
-  user = await UserEntity.updateUser({ id: user.id }, { fullName, isComplete: true });
-  const accessToken = generateAccessToken({
-    data: { userId: user.id, role: user.role },
-  });
+  user = await UserEntity.updateUser(
+    { id: user.id },
+    { fullName, isComplete: true },
+  );
+  const response = await completedUserLoginResponse(user, loginOption);
 
-  return { accessToken, user };
+  return response;
 }
 
 export async function getUserLocation(userId: string) {
@@ -131,32 +142,32 @@ export async function getUserLocation(userId: string) {
   return userLocation;
 }
 
-export async function isWithinRadius(
-  userId: string,
-  latitude: number,
-  longitude: number,
-  radiusInMeters: number,
-) {
-  logger.info("checking if user is within radius", {
-    userId,
-    latitude,
-    longitude,
-    radiusInMeters,
-  });
+// export async function isWithinRadius(
+//   userId: string,
+//   latitude: number,
+//   longitude: number,
+//   radiusInMeters: number,
+// ) {
+//   logger.info("checking if user is within radius", {
+//     userId,
+//     latitude,
+//     longitude,
+//     radiusInMeters,
+//   });
 
-  const userLocation = await UserLocationEntity.getLocationByUserId(userId);
-  if (!userLocation) {
-    logger.error("user location not found", { userId });
-    throw new RouteError("User location not found");
-  }
+//   const userLocation = await UserLocationEntity.getLocationByUserId(userId);
+//   if (!userLocation) {
+//     logger.error("user location not found", { userId });
+//     throw new RouteError("User location not found");
+//   }
 
-  const distance = geolib.getDistance(
-    { latitude, longitude },
-    {
-      latitude: userLocation.latitude,
-      longitude: userLocation.longitude,
-    },
-  );
+//   const distance = geolib.getDistance(
+//     { latitude, longitude },
+//     {
+//       latitude: userLocation.latitude,
+//       longitude: userLocation.longitude,
+//     },
+//   );
 
-  return distance <= radiusInMeters;
-}
+//   return distance <= radiusInMeters;
+// }

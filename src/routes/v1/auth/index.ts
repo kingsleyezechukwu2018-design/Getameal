@@ -3,9 +3,10 @@ import {
   emailLoginSchema,
   emailSignUpSchema,
   googleAuthSchema,
+  refreshTokenSchema,
 } from "./validation.auth";
 import { validateInput } from "middlewares/validateInput";
-import { emailLogin, emailSignUp, googleAuth } from "controllers";
+import { emailLogin, emailSignUp, googleAuth, refreshToken } from "controllers";
 import { asyncWrapper } from "utils/helpers";
 
 const router = Router();
@@ -39,6 +40,17 @@ router.post(
     const { googleToken } = req.body;
 
     const result = await googleAuth({ googleToken });
+    res.json(result);
+  }),
+);
+
+router.post(
+  "/refresh-token",
+  validateInput(refreshTokenSchema),
+  asyncWrapper(async (req: Request, res: Response, _next: NextFunction) => {
+    const { userId } = req.body;
+
+    const result = await refreshToken(userId);
     res.json(result);
   }),
 );

@@ -11,3 +11,7 @@ export const emailLoginSchema = Joi.object({
 export const googleAuthSchema = Joi.object({
   googleToken: Joi.string().required()
 });
+
+export const refreshTokenSchema = Joi.object({
+  userId: Joi.string().required()
+});

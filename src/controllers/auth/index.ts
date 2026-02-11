@@ -1,13 +1,18 @@
-import { RouteError } from "configs/errors";
+import { InternalError, RouteError } from "configs/errors";
 import createLogger, { ModuleType } from "utils/logger";
 import { UserEntity } from "models/users/users.entity";
 import { createOtp } from "controllers/otp";
 import { OtpType } from "controllers/otp/types_otp";
 import { verifyGoogleToken } from "configs/googleAuthLibrary";
-import { generateAccessToken, generateAppleClientSecret } from "./util_auth";
+import { generateToken, generateAppleClientSecret } from "./util_auth";
 import { axiosApi } from "utils/helpers";
+import { AuthEntity, LoginOption } from "models/auth/auth.entity";
+import appConfig from "configs";
+import { IToken } from "utils/types";
+import jwt from "jsonwebtoken";
 
 const logger = createLogger(ModuleType.Controller, "AUTH");
+const { jwtRefreshTokenExpiresIn, jwtRefreshTokenSecret } = appConfig;
 
 export async function emailSignUp(email: string) {
   logger.info("email signup request", { email });
@@ -16,6 +21,7 @@ export async function emailSignUp(email: string) {
   if (!user) {
     logger.info("creating new user...", { email });
     await UserEntity.createUser({ email });
+    await AuthEntity.createAuth({ userId: user.id });
   }
 
   const otp = await createOtp(email, OtpType.AUTH);
@@ -49,23 +55,93 @@ export async function googleAuth({ googleToken }: { googleToken: string }) {
 
   logger.info("email signup request", { email });
 
-  const user = await UserEntity.findByParams({ email });
+  let user = await UserEntity.findByParams({ email });
+  let userAuth: AuthEntity;
   if (!user) {
     logger.info("creating new user...", { email });
-    await UserEntity.createUser({ email });
+    user = await UserEntity.createUser({ email });
+    userAuth = await AuthEntity.createAuth({ userId: user.id });
   }
 
   let response;
   response.user = user;
 
   if (user.isComplete) {
-    const accessToken = generateAccessToken({
-      data: { userId: user.id, role: user.role },
-    });
-    response = { accessToken, ...response };
+    response = await completedUserLoginResponse(user, LoginOption.GOOGLE);
   }
 
   return response;
+}
+
+export async function refreshToken(userId: string) {
+  logger.info("refresh token request", { userId });
+
+  const user = await UserEntity.findByParams({ id: userId });
+  if (!user) {
+    throw new InternalError("Account not found");
+  }
+
+  const auth = await AuthEntity.getAuthByParams({ userId });
+  if (!auth) {
+    throw new InternalError("Account not found");
+  }
+
+  const payload = jwt.decode(auth.refreshToken) as IToken;
+  if (payload.exp < Date.now()) {
+    logger.info("refresh token expired", { userId });
+    throw new InternalError("Refresh token expired. Please login again");
+  }
+
+  const accessToken = generateToken({
+    data: { userId: user.id, role: user.role },
+  });
+
+  return { accessToken };
+}
+
+export async function completedUserLoginResponse(
+  user: UserEntity,
+  lastLoginOption?: LoginOption,
+) {
+  logger.info("generating login response for completed user", {
+    userId: user.id,
+  });
+  let userAuth = await AuthEntity.getAuthByParams({ userId: user.id });
+
+  if (!userAuth || !userAuth.refreshToken) {
+    logger.error("Invalid auth record or missing refresh token", {
+      userId: user.id,
+    });
+    throw new InternalError("Invalid auth record or missing refresh token");
+  }
+
+  const { exp: refreshTokenExpiresAt } = jwt.decode(
+    userAuth.refreshToken,
+  ) as IToken;
+  const accessToken = generateToken({
+    data: { userId: user.id, role: user.role },
+  });
+
+  const refreshToken =
+    refreshTokenExpiresAt < Date.now()
+      ? generateToken({
+          data: { userId: user.id, role: user.role },
+          secret: jwtRefreshTokenSecret,
+          expiresIn: jwtRefreshTokenExpiresIn,
+        })
+      : userAuth.refreshToken;
+
+  userAuth = await AuthEntity.updateAuth(
+    { userId: user.id },
+    { lastLoginOption, refreshToken },
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+    ...user,
+    lastLoginOption: userAuth.lastLoginOption,
+  };
 }
 
 // export async function appleAuth({

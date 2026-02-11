@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import createLogger, { ModuleType } from "utils/logger";
 import { IRequest, IToken } from "utils/types";
 
-const { jwtSecret } = appConfig;
+const { jwtAccessTokenSecret } = appConfig;
 const logger = createLogger(ModuleType.Middleware, "AUTH");
 
 export const validateJwtToken = async (
@@ -17,7 +17,7 @@ export const validateJwtToken = async (
 
   if (!token) return next();
   try {
-    const decoded = jwt.verify(token, jwtSecret);
+    const decoded = jwt.verify(token, jwtAccessTokenSecret);
     req.userId = (decoded as IToken).userId;
 
     logger.info("decoded token", { decoded });

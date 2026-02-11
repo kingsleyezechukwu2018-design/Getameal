@@ -4,7 +4,7 @@ import { generateOtp, getOtpExpireAt } from "./util_otp";
 import createLogger, { ModuleType } from "utils/logger";
 import { AllowedLoginOtpTypes, OtpType, VerifyOtpResponse } from "./types_otp";
 import { UserEntity } from "models/users/users.entity";
-import { generateAccessToken } from "controllers/auth/util_auth";
+import { generateToken } from "controllers/auth/util_auth";
 
 const logger = createLogger(ModuleType.Controller, "OTP");
 
@@ -71,7 +71,7 @@ export async function verifyOtp(
 
       if (user && user.isComplete) {
         logger.info("generating access token for user", { user });
-        const accessToken = generateAccessToken({
+        const accessToken = generateToken({
           data: { userId: user.id, role: user.role },
         });
         response = { accessToken, ...response };
