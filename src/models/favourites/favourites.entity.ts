@@ -19,6 +19,9 @@ export class FavouritesEntity extends BaseEntity {
   @Column({ name: "cook_id", type: "uuid" })
   cookId: string;
 
+  @Column({ name: "is_deleted", type: "boolean", default: false })
+  isDeleted: boolean;
+
   @CreateDateColumn({ name: "created_at", type: "timestamp with time zone" })
   createdAt: Date;
 
@@ -34,7 +37,7 @@ export class FavouritesEntity extends BaseEntity {
   static async getFavourite(
     criteria: FindOptionsWhere<FavouritesEntity>,
   ): Promise<FavouritesEntity | null> {
-    return this.findOne({ where: criteria });
+    return this.findOne({ where: { ...criteria, isDeleted: false } });
   }
 
   static async updateFavourite(
@@ -43,12 +46,5 @@ export class FavouritesEntity extends BaseEntity {
   ): Promise<FavouritesEntity | null> {
     await this.getRepository().update(criteria, data);
     return this.getFavourite(criteria);
-  }
-
-  static async deleteFavourite(
-    criteria: FindOptionsWhere<FavouritesEntity>,
-  ): Promise<boolean> {
-    const result = await this.getRepository().delete(criteria);
-    return result.affected !== undefined && result.affected > 0;
   }
 }

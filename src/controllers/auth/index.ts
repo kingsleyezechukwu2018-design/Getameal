@@ -4,12 +4,13 @@ import { UserEntity } from "models/users/users.entity";
 import { createOtp } from "controllers/otp";
 import { OtpType } from "controllers/otp/types_otp";
 import { verifyGoogleToken } from "configs/googleAuthLibrary";
-import { generateToken, generateAppleClientSecret } from "./util_auth";
-import { axiosApi } from "utils/helpers";
+import { generateToken } from "./util_auth";
 import { AuthEntity, LoginOption } from "models/auth/auth.entity";
 import appConfig from "configs";
 import { IToken } from "utils/types";
 import jwt from "jsonwebtoken";
+import { getUser } from "utils";
+import { sendOtpEmail } from "configs/mailgun/emailTemplates";
 
 const logger = createLogger(ModuleType.Controller, "AUTH");
 const { jwtRefreshTokenExpiresIn, jwtRefreshTokenSecret } = appConfig;
@@ -25,7 +26,7 @@ export async function emailSignUp(email: string) {
   }
 
   const otp = await createOtp(email, OtpType.AUTH);
-  //TODO: send email with otp code
+  await sendOtpEmail(email, otp.code);
 
   logger.info("otp sent to email", { email, otp });
   return { message: "OTP code has been sent to your email" };
@@ -43,7 +44,7 @@ export async function emailLogin(email: string) {
   }
 
   const otp = await createOtp(email, OtpType.AUTH);
-  //TODO: send email with otp code
+   await sendOtpEmail(email, otp.code);
 
   logger.info("otp sent to email", { email, otp });
   return { message: "OTP code has been sent to your email" };
@@ -76,10 +77,7 @@ export async function googleAuth({ googleToken }: { googleToken: string }) {
 export async function refreshToken(userId: string) {
   logger.info("refresh token request", { userId });
 
-  const user = await UserEntity.findByParams({ id: userId });
-  if (!user) {
-    throw new InternalError("Account not found");
-  }
+  const user = await getUser(userId);
 
   const auth = await AuthEntity.getAuthByParams({ userId });
   if (!auth) {

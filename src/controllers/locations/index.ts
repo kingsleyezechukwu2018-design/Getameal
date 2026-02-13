@@ -2,12 +2,12 @@ import { LocationEntity } from "models/location/location.entity";
 import geolib from "geolib";
 import { formatLocationFromCoords } from "configs/locationLibray/openStreetMap";
 import { UserLocationEntity } from "models/userLocations/user_location.entity";
-import { RouteError } from "configs/errors";
+import { InternalError, RouteError } from "configs/errors";
 import createLogger, { ModuleType } from "utils/logger";
 import { UserEntity } from "models/users/users.entity";
 import { completedUserLoginResponse } from "controllers/auth";
 import { AuthEntity, LoginOption } from "models/auth/auth.entity";
-import { handlePaginate } from "utils";
+import { getUser, handlePaginate } from "utils";
 
 const logger = createLogger(ModuleType.Controller, "LOCATIONS");
 
@@ -91,12 +91,7 @@ export async function addUserLocationAndFullName({
     loginOption,
   });
 
-  let user = await UserEntity.findByParams({ id: userId });
-  if (!user) {
-    const error = new RouteError("account not found");
-    logger.info("account not found", { userId, error });
-    throw error;
-  }
+  let user = await getUser(userId);
 
   const location = await LocationEntity.findByCoordinates(latitude, longitude);
   if (!location) {
@@ -171,3 +166,29 @@ export async function getUserLocation(userId: string) {
 
 //   return distance <= radiusInMeters;
 // }
+
+export const getCooks = async ({
+  userId,
+  lat,
+  lng,
+  count
+}: {
+  userId: string;
+  lat?: number;
+  lng?: number;
+  count?: number;
+}) => {
+  const user = await getUser(userId);
+
+  const location = await UserLocationEntity.getLocationByUserId(user.id);
+  if (!location) {
+    const error = new InternalError("User location not found");
+    logger.info("user location not found", { userId });
+    throw error;
+  }
+
+  lat = lat || location.latitude;
+  lng = lng || location.longitude;
+  const cooks = await LocationEntity.getCooksByLocation(lat, lng, count);
+  return cooks;
+};

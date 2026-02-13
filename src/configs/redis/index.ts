@@ -40,10 +40,18 @@ export async function getItemByKey(key: string): Promise<string | null> {
   return redis.get(key);
 }
 
-export async function addItemWithTTL(key: string, value: string, ttlSeconds: number): Promise<void> {
-  await redis.set(key, value, "EX", ttlSeconds);
+export async function addItem(key: string, value: string, ttlSeconds?: number): Promise<void> {
+  if (ttlSeconds) {
+    await redis.set(key, value, "EX", ttlSeconds);
+  } else {
+    await redis.set(key, value);
+  }
 }
 
 export async function deleteItem(key: string): Promise<void> {
   await redis.del(key);
+}
+
+export async function decrementCount(key: string, quantity: number): Promise<void> {
+  await redis.decrby(key, quantity);
 }

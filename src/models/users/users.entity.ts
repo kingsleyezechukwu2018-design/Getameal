@@ -26,6 +26,22 @@ export class UserEntity extends BaseEntity {
   @Column({ name: "role", type: "varchar", length: 50, default: "USER" })
   role: UserRole;
 
+  @Column({ name: "bio", type: "text", nullable: true })
+  bio: string;
+
+  @Column({ name: "profile_image_url", type: "varchar", nullable: true })
+  profileImageUrl: string;
+
+  @Column({ name: "phone_number", type: "varchar", nullable: true })
+  phoneNumber: string;
+
+  @Column({
+    name: "phone_number_country_code",
+    type: "varchar",
+    nullable: true,
+  })
+  phoneNumberCountryCode: string;
+
   @CreateDateColumn({ name: "created_at", type: "timestamp with time zone" })
   createdAt: Date;
 
@@ -48,6 +64,18 @@ export class UserEntity extends BaseEntity {
   ): Promise<UserEntity> {
     await this.getRepository().update(criteria, data);
     const user = await this.findByParams(criteria);
+
+    return user;
+  }
+
+  static async getUserByIdWithLocation(
+    userId: string,
+  ): Promise<UserEntity | null> {
+    const user = await this.getRepository()
+      .createQueryBuilder("user")
+      .leftJoinAndSelect("user.location", "location")
+      .where("user.id = :userId", { userId })
+      .getOne();
 
     return user;
   }

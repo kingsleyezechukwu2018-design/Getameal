@@ -8,6 +8,7 @@ import {
   FindOptionsWhere,
 } from "typeorm";
 import { DeliveryOption, QuantityUnit } from "./types_meal_entity";
+import { UserEntity } from "models/users/users.entity";
 
 @Entity({ name: "meals" })
 export class MealEntity extends BaseEntity {
@@ -57,6 +58,13 @@ export class MealEntity extends BaseEntity {
   deliveryFee: number;
 
   @Column({
+    name: "next_available_date",
+    type: "timestamp with time zone",
+    nullable: true,
+  })
+  nextAvailableDate: Date;
+
+  @Column({
     name: "pickup_address",
     type: "varchar",
     length: 255,
@@ -80,6 +88,17 @@ export class MealEntity extends BaseEntity {
     return this.findOne({ where: criteria });
   }
 
+  static async getMeals(
+    criteria: FindOptionsWhere<MealEntity>,
+    count: number = 10,
+  ): Promise<MealEntity[] | null> {
+    return this.find({
+      where: criteria,
+      take: count,
+      order: { createdAt: "DESC" },
+    });
+  }
+
   static async updateMeal(
     criteria: FindOptionsWhere<MealEntity>,
     data: Partial<MealEntity>,
@@ -88,11 +107,17 @@ export class MealEntity extends BaseEntity {
     return this.getMeal(criteria);
   }
 
-  //Q: should the meal record be taken out of the database when deleted or should it be marked as deleted and hidden from users?
-  //   static async deleteMeal(
-  //     criteria: FindOptionsWhere<MealEntity>,
-  //   ): Promise<boolean> {
-  //     const result = await this.getRepository().delete(criteria);
-  //     return result.affected !== undefined && result.affected > 0;
-  //   }
+  static async getMealByIdWithDetails(
+    mealId: string,
+  ): Promise<MealEntity | null> {
+    const meal = await this.getRepository()
+      .createQueryBuilder("meal")
+      .innerJoinAndSelect(UserEntity, "cook", "cook.id = meal.cookId")
+      .innerJoinAndSelect("cook.location", "location")
+      .leftJoinAndSelect("meal.reviews", "reviews")
+      .where("meal.id = :mealId", { mealId })
+      .getOne();
+
+    return meal;
+  }
 }

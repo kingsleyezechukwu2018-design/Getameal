@@ -5,6 +5,7 @@ import createLogger, { ModuleType } from "utils/logger";
 import { AllowedLoginOtpTypes, OtpType, VerifyOtpResponse } from "./types_otp";
 import { UserEntity } from "models/users/users.entity";
 import { generateToken } from "controllers/auth/util_auth";
+import { sendOtpEmail } from "configs/mailgun/emailTemplates";
 
 const logger = createLogger(ModuleType.Controller, "OTP");
 
@@ -93,7 +94,7 @@ export async function resendOtp(
   try {
     logger.info("otp resend request", { email, type });
     const otp = await createOtp(email, type);
-    //TODO: send otp via email service (TODO)
+     await sendOtpEmail(email, otp.code);
 
     logger.info("otp sent to email", { email, otp });
     return { message: "OTP code has been sent to your email" };

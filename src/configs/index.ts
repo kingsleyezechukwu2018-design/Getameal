@@ -15,10 +15,11 @@ const appConfig = {
   jwtRefreshTokenSecret: env.JWT_REFRESH_TOKEN_SECRET,
   jwtRefreshTokenExpiresIn: env.JWT_REFRESH_TOKEN_EXPIRES_IN || "60d",
 
-  //these hasn't been added to .env file yet
   mailgunApiKey: env.MAILGUN_API_KEY,
   mailgunDomain: env.MAILGUN_DOMAIN,
-  appEmail: env.MAILGUN_APP_EMAIL,
+  appEmail: env.MAILGUN_APP_FROM_EMAIL,
+  mailgunBaseUrl: env.MAILGUN_BASE_URL,
+  //these hasn't been added to .env file yet
   googleOAuthClientId: env.GOOGLE_OAUTH_CLIENT_ID || "",
 };
 

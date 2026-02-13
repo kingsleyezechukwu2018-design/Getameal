@@ -1,6 +1,7 @@
 import {
   addUserLocationAndFullName,
   getAllLocations,
+  getCooks,
   getLocation,
   getUserLocation,
 } from "controllers/locations";
@@ -10,6 +11,7 @@ import { asyncWrapper } from "utils/helpers";
 import {
   addUserLocationSchema,
   getAllLocationsSchema,
+  getCooksByLocationSchema,
   getLocationSchema,
 } from "./validation.location";
 import { IRequest } from "utils/types";
@@ -64,6 +66,18 @@ router.get(
   asyncWrapper(async (req: IRequest, res: Response, _next: NextFunction) => {
     const userId = req.userId;
     const result = await getUserLocation(userId);
+    res.json(result);
+  }),
+);
+
+router.post(
+  "/cooks",
+  validateInput(getCooksByLocationSchema, "body"),
+  asyncWrapper(async (req: IRequest, res: Response, _next: NextFunction) => {
+    const userId = req.userId;
+    const { lat, lng, count } = req.body;
+
+    const result = await getCooks({userId, lat, lng, count});
     res.json(result);
   }),
 );

@@ -1,3 +1,5 @@
+import { MealEntity } from "models/meal/meal.entity";
+import { UserEntity } from "models/users/users.entity";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -76,5 +78,31 @@ export class LocationEntity extends BaseEntity {
 
   static async createLocation(params: Partial<LocationEntity>) {
     return this.getRepository().save(params);
+  }
+
+  static async getCooksByLocation(latitude: number, longitude: number, count: number = 5) {
+    const cooks = await this.getRepository()
+      .createQueryBuilder("location")
+      .innerJoin(UserEntity, "user", "user.id = user_location.user_id")
+      .innerJoinAndSelect(MealEntity, "meal", "meal.user_id = user.id")
+      .select([
+        "user.id AS id",
+        "user.full_name AS cook_fullName",
+        "location.city AS city",
+        "location.state AS state",
+        "location.country AS country"
+      ])
+      .where(
+        `ST_DistanceSphere(
+          ST_MakePoint(location.longitude, location.latitude),
+          ST_MakePoint(:longitude, :latitude)
+        ) <= :radius`,
+        { latitude, longitude, radius: 5000 },
+      )
+      .andWhere("user.role = 'COOK'")
+      .limit(count)
+      .getRawMany();
+//join reviews  table to get average rating for each cook
+    return cooks;
   }
 }

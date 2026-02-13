@@ -18,7 +18,6 @@ export function generateToken({
   });
 }
 
-//TODO
 export function generateAppleClientSecret() {
   const privateKey = fs.readFileSync("./AuthKey_XXXXXXXXXX.p8"); // your .p8 file
   const teamId = "YOUR_TEAM_ID";
