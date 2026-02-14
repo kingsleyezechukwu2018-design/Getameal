@@ -27,7 +27,7 @@ export const validateJwtToken = async (
 
     if (err.name) {
       if (err.name === "JsonWebTokenError") {
-        res.status(401).json({ message: "invalid" });
+        res.status(401).json({ message: "invalid token" });
         return next({ message: "invalid token" });
       } else if (err.name === "TokenExpiredError") {
         res

@@ -1,5 +1,4 @@
 import {
-  addUserLocationAndFullName,
   getAllLocations,
   getCooks,
   getLocation,
@@ -9,7 +8,6 @@ import { NextFunction, Router, Request, Response } from "express";
 import { validateInput } from "middlewares/validateInput";
 import { asyncWrapper } from "utils/helpers";
 import {
-  addUserLocationSchema,
   getAllLocationsSchema,
   getCooksByLocationSchema,
   getLocationSchema,
@@ -22,7 +20,7 @@ const router = Router();
 router.get(
   "/all",
   validateInput(getAllLocationsSchema, "query"),
-  asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  asyncWrapper(async (req: Request, res: Response, _next: NextFunction) => {
     const { page, per_page } = req.query;
 
     const result = await getAllLocations({
@@ -39,22 +37,6 @@ router.get(
   asyncWrapper(async (req: Request, res: Response, _next: NextFunction) => {
     const { lat, lng } = req.query;
     const result = await getLocation(Number(lat), Number(lng));
-    res.json(result);
-  }),
-);
-
-router.post(
-  "/user",
-  validateInput(addUserLocationSchema),
-  asyncWrapper(async (req: Request, res: Response, _next: NextFunction) => {
-    const { lat, lng, fullName, userId, loginOption } = req.body;
-    const result = await addUserLocationAndFullName({
-      userId,
-      latitude: Number(lat),
-      longitude: Number(lng),
-      fullName,
-      loginOption,
-    });
     res.json(result);
   }),
 );
@@ -77,7 +59,7 @@ router.post(
     const userId = req.userId;
     const { lat, lng, count } = req.body;
 
-    const result = await getCooks({userId, lat, lng, count});
+    const result = await getCooks({ userId, lat, lng, count });
     res.json(result);
   }),
 );

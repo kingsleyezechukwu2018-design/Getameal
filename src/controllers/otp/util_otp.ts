@@ -10,6 +10,6 @@ export function generateOtp(): string {
 /**
  * Add seconds to the current date and return the result
  */
-export function getOtpExpireAt(seconds = 60): Date {
+export function getOtpExpireAt(seconds = 3600): Date {
   return moment().add(seconds, "seconds").toDate();
 }

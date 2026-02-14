@@ -4,9 +4,6 @@ import { formatLocationFromCoords } from "configs/locationLibray/openStreetMap";
 import { UserLocationEntity } from "models/userLocations/user_location.entity";
 import { InternalError, RouteError } from "configs/errors";
 import createLogger, { ModuleType } from "utils/logger";
-import { UserEntity } from "models/users/users.entity";
-import { completedUserLoginResponse } from "controllers/auth";
-import { AuthEntity, LoginOption } from "models/auth/auth.entity";
 import { getUser, handlePaginate } from "utils";
 
 const logger = createLogger(ModuleType.Controller, "LOCATIONS");
@@ -22,10 +19,17 @@ export async function getAllLocations({
 
   const { skip, limit } = handlePaginate({ page, per_page });
 
-  const locations = await LocationEntity.getLocationsGroupedByState({
-    skip,
-    limit,
-  });
+  let locations;
+  try {
+    locations = await LocationEntity.getLocationsGroupedByState({
+      skip,
+      limit,
+    });
+  } catch (error) {
+    logger.error("error retrieving all locations", { error });
+    throw error;
+  }
+
   return locations;
 }
 
@@ -57,6 +61,7 @@ export async function getLocation(latitude: number, longitude: number) {
 
   const { city, state, country } = res;
   logger.info("formatted location from coordinates", { city, state, country });
+
   location = await LocationEntity.createLocation({
     latitude,
     longitude,
@@ -68,63 +73,6 @@ export async function getLocation(latitude: number, longitude: number) {
   return {
     location: `${city}, ${state}, ${country}`,
   };
-}
-
-export async function addUserLocationAndFullName({
-  userId,
-  latitude,
-  longitude,
-  fullName,
-  loginOption,
-}: {
-  userId: string;
-  latitude: number;
-  longitude: number;
-  fullName: string;
-  loginOption: LoginOption;
-}) {
-  logger.info("add user location request", {
-    userId,
-    latitude,
-    longitude,
-    fullName,
-    loginOption,
-  });
-
-  let user = await getUser(userId);
-
-  const location = await LocationEntity.findByCoordinates(latitude, longitude);
-  if (!location) {
-    const error = new RouteError("Location not found");
-    logger.info("location not found", { userId, latitude, longitude, error });
-    throw error;
-  }
-
-  let userLocation = await UserLocationEntity.getLocationByUserId(userId);
-  if (userLocation && user.isComplete) {
-    const response = await completedUserLoginResponse(user, loginOption);
-    return response;
-  }
-
-  if (userLocation) {
-    userLocation = await UserLocationEntity.updateUserLocation(
-      userId,
-      location.id,
-    );
-  } else {
-    userLocation = await UserLocationEntity.create({
-      userId,
-      locationId: location.id,
-    }).save();
-  }
-
-  user = await UserEntity.updateUser(
-    { id: user.id },
-    { fullName, isComplete: true },
-  );
-  const response = await completedUserLoginResponse(user, loginOption);
-
-  return response;
 }
 
 export async function getUserLocation(userId: string) {
@@ -171,7 +119,7 @@ export const getCooks = async ({
   userId,
   lat,
   lng,
-  count
+  count,
 }: {
   userId: string;
   lat?: number;

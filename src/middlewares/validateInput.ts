@@ -9,7 +9,6 @@ export const validateInput =
   ) =>
   (req: Request, _res: Response, next: NextFunction) => {
     let parsedData;
-
     if (fieldType === "body") {
       parsedData = schema.validate(req.body);
     } else if (fieldType === "params") {

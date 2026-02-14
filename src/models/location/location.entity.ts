@@ -53,7 +53,7 @@ export class LocationEntity extends BaseEntity {
         "cities",
       )
       .groupBy("location.state")
-      .orderBy("location.createdAt", "DESC")
+      .orderBy("location.state", "ASC")
       .skip(skip)
       .take(limit)
       .getRawMany();
@@ -80,7 +80,11 @@ export class LocationEntity extends BaseEntity {
     return this.getRepository().save(params);
   }
 
-  static async getCooksByLocation(latitude: number, longitude: number, count: number = 5) {
+  static async getCooksByLocation(
+    latitude: number,
+    longitude: number,
+    count: number = 5,
+  ) {
     const cooks = await this.getRepository()
       .createQueryBuilder("location")
       .innerJoin(UserEntity, "user", "user.id = user_location.user_id")
@@ -90,7 +94,7 @@ export class LocationEntity extends BaseEntity {
         "user.full_name AS cook_fullName",
         "location.city AS city",
         "location.state AS state",
-        "location.country AS country"
+        "location.country AS country",
       ])
       .where(
         `ST_DistanceSphere(
@@ -102,7 +106,7 @@ export class LocationEntity extends BaseEntity {
       .andWhere("user.role = 'COOK'")
       .limit(count)
       .getRawMany();
-//join reviews  table to get average rating for each cook
+    //join reviews  table to get average rating for each cook
     return cooks;
   }
 }

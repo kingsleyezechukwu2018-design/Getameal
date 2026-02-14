@@ -1,4 +1,8 @@
 import { axiosApi } from "utils/helpers";
+import createLogger, { ModuleType } from "utils/logger";
+
+const logger = createLogger(ModuleType.Config, "OpenStreetMap");
+
 
 export const formatLocationFromCoords = async (lat: string, lng) => {
   const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`;
@@ -6,7 +10,7 @@ export const formatLocationFromCoords = async (lat: string, lng) => {
   const res = await axiosApi(url, "get", {
     headers: { "User-Agent": "GetAMeal/1.0 (getameal@gmail.com)" },
   });
-  console.log("location response:", res);
+  logger.info("location response from OpenStreetMap", { res });
 
   const address = res.address || {};
 

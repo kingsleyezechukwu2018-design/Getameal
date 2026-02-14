@@ -16,16 +16,6 @@ export const getLocationSchema = Joi.object({
   }),
 });
 
-export const addUserLocationSchema = Joi.object({
-  userId: Joi.string().required().required(),
-  lat: Joi.number().required().min(-90).max(90).required(),
-  lng: Joi.number().required().min(-180).max(180).required(),
-  fullName: Joi.string().required(),
-  loginOption: Joi.string()
-    .valid(...Object.values(LoginOption))
-    .required(),
-});
-
 export const getAllLocationsSchema = Joi.object({
   page: Joi.number().integer().min(1).default(1),
   per_page: Joi.number().integer().min(1).max(100).default(20),
@@ -42,5 +32,5 @@ export const getCooksByLocationSchema = Joi.object({
     "number.min": "Longitude must be greater than or equal to -180",
     "number.max": "Longitude must be less than or equal to 180",
   }),
-  count: Joi.number().integer().min(1).max(100).optional()
+  count: Joi.number().integer().min(1).max(100).optional(),
 });

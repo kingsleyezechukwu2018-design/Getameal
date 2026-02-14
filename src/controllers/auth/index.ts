@@ -18,11 +18,19 @@ const { jwtRefreshTokenExpiresIn, jwtRefreshTokenSecret } = appConfig;
 export async function emailSignUp(email: string) {
   logger.info("email signup request", { email });
 
-  const user = await UserEntity.findByParams({ email });
+  let user = await UserEntity.findByParams({ email });
   if (!user) {
     logger.info("creating new user...", { email });
-    await UserEntity.createUser({ email });
-    await AuthEntity.createAuth({ userId: user.id });
+
+    try {
+      user = await UserEntity.createUser({ email });
+      await AuthEntity.createAuth({
+        userId: user.id,
+      });
+    } catch (error) {
+      logger.error("error creating a user account", error);
+      throw error;
+    }
   }
 
   const otp = await createOtp(email, OtpType.AUTH);
@@ -44,7 +52,7 @@ export async function emailLogin(email: string) {
   }
 
   const otp = await createOtp(email, OtpType.AUTH);
-   await sendOtpEmail(email, otp.code);
+  await sendOtpEmail(email, otp.code);
 
   logger.info("otp sent to email", { email, otp });
   return { message: "OTP code has been sent to your email" };
@@ -106,22 +114,26 @@ export async function completedUserLoginResponse(
   });
   let userAuth = await AuthEntity.getAuthByParams({ userId: user.id });
 
-  if (!userAuth || !userAuth.refreshToken) {
+  if (!userAuth) {
     logger.error("Invalid auth record or missing refresh token", {
       userId: user.id,
     });
     throw new InternalError("Invalid auth record or missing refresh token");
   }
 
-  const { exp: refreshTokenExpiresAt } = jwt.decode(
-    userAuth.refreshToken,
-  ) as IToken;
   const accessToken = generateToken({
     data: { userId: user.id, role: user.role },
   });
 
+  let refreshTokenExpiresAt;
+  if (userAuth.refreshToken) {
+    const { exp } = jwt.decode(userAuth.refreshToken) as IToken;
+
+    refreshTokenExpiresAt = exp;
+  }
+
   const refreshToken =
-    refreshTokenExpiresAt < Date.now()
+    !refreshTokenExpiresAt || refreshTokenExpiresAt < Date.now()
       ? generateToken({
           data: { userId: user.id, role: user.role },
           secret: jwtRefreshTokenSecret,
