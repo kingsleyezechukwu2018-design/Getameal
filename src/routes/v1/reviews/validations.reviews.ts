@@ -8,6 +8,7 @@ export const addReviewSchema = Joi.object({
 
 export const getReviewsSchema = Joi.object({
   cookId: Joi.string().required(),
+  count: Joi.string().optional()
 });
 
 export const getReviewSchema = Joi.object({

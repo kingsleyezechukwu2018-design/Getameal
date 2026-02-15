@@ -1,4 +1,5 @@
 import { MealEntity } from "models/meal/meal.entity";
+import { UserLocationEntity } from "models/userLocations/user_location.entity";
 import { UserEntity } from "models/users/users.entity";
 import {
   Entity,
@@ -87,8 +88,9 @@ export class LocationEntity extends BaseEntity {
   ) {
     const cooks = await this.getRepository()
       .createQueryBuilder("location")
-      .innerJoin(UserEntity, "user", "user.id = user_location.user_id")
-      .innerJoinAndSelect(MealEntity, "meal", "meal.user_id = user.id")
+      .innerJoin(UserLocationEntity, "ul", "ul.location_id = location.id")
+      .innerJoin(UserEntity, "user", "user.id = ul.user_id")
+      .innerJoin(MealEntity, "meal", "meal.cook_id = user.id")
       .select([
         "user.id AS id",
         "user.full_name AS cook_fullName",
@@ -98,8 +100,8 @@ export class LocationEntity extends BaseEntity {
       ])
       .where(
         `ST_DistanceSphere(
-          ST_MakePoint(location.longitude, location.latitude),
-          ST_MakePoint(:longitude, :latitude)
+          ST_MakePoint(location.longitude::float8, location.latitude::float8),
+          ST_MakePoint(:longitude::float8, :latitude::float8)
         ) <= :radius`,
         { latitude, longitude, radius: 5000 },
       )

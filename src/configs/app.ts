@@ -31,6 +31,23 @@ app
 
     if (err instanceof RouteError) {
       error = { message: err.message, statusCode: err.statusCode };
+    } else if (err instanceof SyntaxError) {
+      error = { message: "Invalid JSON payload", statusCode: 400 };
+    } else if (
+      err.name === "JsonWebTokenError" ||
+      err.message === "invalid token"
+    ) {
+      logger.error("invalid jwt token", { error: err });
+      error = { message: "Invalid token", statusCode: 401 };
+    } else if (
+      err.name === "TokenExpiredError" ||
+      err.message === "authentication expired"
+    ) {
+      logger.error("jwt token expired", { error: err });
+      error = {
+        message: "Authentication expired. Please login again",
+        statusCode: 401,
+      };
     } else {
       error = {
         message: "Something went wrong, try again later",
@@ -38,7 +55,7 @@ app
       };
     }
 
-    logger.error("Global error caught", { error, err });
+    logger.error("Global error caught", { error, err, message: err.message });
     return handleResponse({
       res,
       status: error.statusCode,

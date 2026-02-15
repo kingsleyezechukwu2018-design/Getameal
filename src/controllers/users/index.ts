@@ -41,6 +41,7 @@ export async function addFavouriteCook(userId: string, cookId: string) {
 
 export async function removeFavouriteCook(userId: string, cookId: string) {
   logger.info("removing favourite cook", { userId, cookId });
+  const [_user, cook] = await Promise.all([getUser(userId), getUser(cookId)]);
 
   const deleted = await FavouritesEntity.updateFavourite(
     { userId, cookId, isDeleted: false },

@@ -47,7 +47,7 @@ export class OrderItemEntity extends BaseEntity {
   @UpdateDateColumn({ name: "updated_at", type: "timestamp with time zone" })
   updatedAt: Date;
 
-  @ManyToOne(() => OrderEntity, (order) => order.id, { nullable: false })
+  @ManyToOne(() => OrderEntity, (order) => order.orderItems, { nullable: false })
   @JoinColumn({ name: "order_id" })
   order: OrderEntity;
 

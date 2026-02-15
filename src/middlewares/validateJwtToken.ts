@@ -12,13 +12,16 @@ export const validateJwtToken = async (
   res: Response,
   next: NextFunction,
 ) => {
+  logger.info("validating jwt token for incoming request", {});
   let token = req.headers["authorization"] as string;
   token = token?.replace("Bearer ", "");
 
   if (!token) return next();
+  logger.info("found token, validating...", {});
   try {
     const decoded = jwt.verify(token, jwtAccessTokenSecret);
     req.userId = (decoded as IToken).userId;
+    req.role = (decoded as IToken).role;
 
     logger.info("decoded token", { decoded });
     return next();
@@ -27,13 +30,11 @@ export const validateJwtToken = async (
 
     if (err.name) {
       if (err.name === "JsonWebTokenError") {
-        res.status(401).json({ message: "invalid token" });
+        logger.error("invalid jwt token", { error: err });
         return next({ message: "invalid token" });
       } else if (err.name === "TokenExpiredError") {
-        res
-          .status(401)
-          .json({ message: "You have been logged out. Please login again" });
-        return next({ message: "authentication expired. Please login again" });
+        logger.error("jwt token expired", { error: err });
+        return next({ message: "authentication expired" });
       }
     }
 

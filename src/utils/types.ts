@@ -1,10 +1,11 @@
+import { UserRole } from "controllers/users/types_users";
 import { Request } from "express";
 
 export interface IRequest extends Request, IToken {}
 
 export interface IToken {
   userId: string;
-  role?: string;
+  role?: UserRole
   exp?: number | undefined;
 }
 

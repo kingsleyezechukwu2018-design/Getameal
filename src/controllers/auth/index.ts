@@ -9,7 +9,7 @@ import { AuthEntity, LoginOption } from "models/auth/auth.entity";
 import appConfig from "configs";
 import { IToken } from "utils/types";
 import jwt from "jsonwebtoken";
-import { getUser } from "utils";
+import { getUser, prepareLoginToken } from "utils";
 import { sendOtpEmail } from "configs/mailgun/emailTemplates";
 
 const logger = createLogger(ModuleType.Controller, "AUTH");
@@ -92,10 +92,11 @@ export async function refreshToken(userId: string) {
     throw new InternalError("Account not found");
   }
 
+  console.log("refresh token", auth.refreshToken);
   const payload = jwt.decode(auth.refreshToken) as IToken;
-  if (payload.exp < Date.now()) {
+  if (payload.exp*1000 < Date.now()) {
     logger.info("refresh token expired", { userId });
-    throw new InternalError("Refresh token expired. Please login again");
+    throw new RouteError("expired token. Please login again");
   }
 
   const accessToken = generateToken({
@@ -121,25 +122,7 @@ export async function completedUserLoginResponse(
     throw new InternalError("Invalid auth record or missing refresh token");
   }
 
-  const accessToken = generateToken({
-    data: { userId: user.id, role: user.role },
-  });
-
-  let refreshTokenExpiresAt;
-  if (userAuth.refreshToken) {
-    const { exp } = jwt.decode(userAuth.refreshToken) as IToken;
-
-    refreshTokenExpiresAt = exp;
-  }
-
-  const refreshToken =
-    !refreshTokenExpiresAt || refreshTokenExpiresAt < Date.now()
-      ? generateToken({
-          data: { userId: user.id, role: user.role },
-          secret: jwtRefreshTokenSecret,
-          expiresIn: jwtRefreshTokenExpiresIn,
-        })
-      : userAuth.refreshToken;
+  const { accessToken, refreshToken } = await prepareLoginToken(user, userAuth);
 
   userAuth = await AuthEntity.updateAuth(
     { userId: user.id },
@@ -148,7 +131,6 @@ export async function completedUserLoginResponse(
 
   return {
     accessToken,
-    refreshToken,
     ...user,
     lastLoginOption: userAuth.lastLoginOption,
   };

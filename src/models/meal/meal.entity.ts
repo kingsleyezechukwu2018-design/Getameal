@@ -6,9 +6,14 @@ import {
   UpdateDateColumn,
   BaseEntity,
   FindOptionsWhere,
+  ManyToOne,
+  JoinColumn,
 } from "typeorm";
-import { DeliveryOption, QuantityUnit } from "./types_meal_entity";
+import { Currency, DeliveryOption, QuantityUnit } from "./types_meal_entity";
 import { UserEntity } from "models/users/users.entity";
+import { UserLocationEntity } from "models/userLocations/user_location.entity";
+import { LocationEntity } from "models/location/location.entity";
+import { ReviewEntity } from "models/reviews/review.entity";
 
 @Entity({ name: "meals" })
 export class MealEntity extends BaseEntity {
@@ -29,6 +34,9 @@ export class MealEntity extends BaseEntity {
 
   @Column({ name: "price", type: "float" })
   price: number;
+
+  @Column({ name: "currency", type: "varchar", length: 10, default: "NGN" })
+  currency: Currency;
 
   @Column({ name: "quantity_value", type: "float" })
   quantityValue: number;
@@ -78,6 +86,10 @@ export class MealEntity extends BaseEntity {
   @UpdateDateColumn({ name: "updated_at", type: "timestamp with time zone" })
   updatedAt: Date;
 
+  @ManyToOne(() => UserEntity, (user) => user.meals)
+  @JoinColumn({ name: "cook_id" })
+  cook: UserEntity;
+
   static async createMeal(data: Partial<MealEntity>): Promise<MealEntity> {
     return this.getRepository().save(data);
   }
@@ -94,7 +106,7 @@ export class MealEntity extends BaseEntity {
   ): Promise<MealEntity[] | null> {
     return this.find({
       where: criteria,
-      take: count,
+      take: Number(count),
       order: { createdAt: "DESC" },
     });
   }
@@ -112,11 +124,12 @@ export class MealEntity extends BaseEntity {
   ): Promise<MealEntity | null> {
     const meal = await this.getRepository()
       .createQueryBuilder("meal")
-      .innerJoinAndSelect(UserEntity, "cook", "cook.id = meal.cookId")
-      .innerJoinAndSelect("cook.location", "location")
-      .leftJoinAndSelect("meal.reviews", "reviews")
+      .innerJoinAndSelect("meal.cook", "cook", "cook.id = meal.cookId")
+      .innerJoinAndSelect(UserLocationEntity, "ul", "ul.userId = cook.id")
+      .innerJoinAndSelect("ul.location", "location", "location.id = ul.locationId")
+      .leftJoinAndSelect(ReviewEntity, "reviews", "reviews.cookId = cook.id")
       .where("meal.id = :mealId", { mealId })
-      .getOne();
+      .getRawOne();
 
     return meal;
   }

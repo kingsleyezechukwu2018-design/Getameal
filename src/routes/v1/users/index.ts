@@ -55,7 +55,7 @@ router.get(
 );
 
 router.get(
-  "/favourite-cook/:cookId",
+  "/add-favourite-cook/:cookId",
   validateInput(addFavouriteCookSchema, "params"),
   asyncWrapper(async (req: IRequest, res: Response, _next: NextFunction) => {
     const userId = req.userId;

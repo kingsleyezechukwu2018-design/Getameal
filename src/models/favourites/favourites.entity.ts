@@ -1,3 +1,4 @@
+import { UserEntity } from "models/users/users.entity";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,6 +7,8 @@ import {
   FindOptionsWhere,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from "typeorm";
 
 @Entity({ name: "favourites" })
@@ -28,6 +31,10 @@ export class FavouritesEntity extends BaseEntity {
   @UpdateDateColumn({ name: "updated_at", type: "timestamp with time zone" })
   updatedAt: Date;
 
+  @ManyToOne(() => UserEntity)
+  @JoinColumn({ name: "cook_id" })
+  user: UserEntity;
+
   static async createFavourite(
     data: Partial<FavouritesEntity>,
   ): Promise<FavouritesEntity> {
@@ -44,7 +51,15 @@ export class FavouritesEntity extends BaseEntity {
     criteria: FindOptionsWhere<FavouritesEntity>,
     data: Partial<FavouritesEntity>,
   ): Promise<FavouritesEntity | null> {
+    const { userId, cookId } = criteria;
+    const favourite = await this.getRepository().findOne({
+      where: { userId, cookId },
+    });
+    if (favourite && favourite.isDeleted) {
+      return favourite;
+    }
+
     await this.getRepository().update(criteria, data);
-    return this.getFavourite(criteria);
+    return this.getFavourite({ userId, cookId });
   }
 }

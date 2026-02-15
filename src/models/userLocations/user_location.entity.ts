@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from "typeorm";
 
 @Entity({ name: "user_locations" })
@@ -22,7 +23,7 @@ export class UserLocationEntity extends BaseEntity {
   @Column({ name: "location_id", type: "uuid" })
   locationId: string;
 
-  @OneToOne(() => LocationEntity, { eager: true })
+  @ManyToOne(() => LocationEntity, { eager: true })
   @JoinColumn({ name: "location_id", referencedColumnName: "id" })
   location: LocationEntity;
 
@@ -35,14 +36,14 @@ export class UserLocationEntity extends BaseEntity {
   static async getLocationByUserId(userId: string) {
     const userLocation = await this.getRepository()
       .createQueryBuilder("user_location")
-      .innerJoin("user_location.location", "location")
+      .innerJoin(LocationEntity, "location", "location.id = user_location.location_id")
       .select([
         "location.state AS state",
         "location.country AS country",
         "location.city AS city",
         "location.latitude AS latitude",
         "location.longitude AS longitude",
-        "user_location.user_id AS userId",
+        "user_location.user_id AS user_id",
       ])
       .where("user_location.user_id = :userId", { userId })
       .getRawOne();

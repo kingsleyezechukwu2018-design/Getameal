@@ -38,24 +38,23 @@ router.post(
 
 router.get(
   "/",
-  validateInput(getReviewsSchema, "params"),
+  validateInput(getReviewsSchema, "query"),
   asyncWrapper(async (req: IRequest, res: Response, _next: NextFunction) => {
     const { userId } = req;
-    const { cookId, count } = req.params;
+    const { cookId, count } = req.query;
 
-    const result = await getReviewsByCookId(cookId, Number(count));
+    const result = await getReviewsByCookId(String(cookId), Number(count));
     res.json(result);
   }),
 );
 
 router.post(
   "/retrieve",
-  validateInput(getReviewSchema),
   asyncWrapper(async (req: IRequest, res: Response, _next: NextFunction) => {
     const { userId } = req;
-    const { cookId, reviewId } = req.params;
+    const { cookId, reviewId } = req.body
 
-    const result = await getReview(cookId, reviewId);
+    const result = await getReview(String(cookId), String(reviewId));
     res.json(result);
   }),
 );

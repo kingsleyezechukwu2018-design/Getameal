@@ -1,4 +1,7 @@
 import { UserRole } from "controllers/users/types_users";
+import { LocationEntity } from "models/location/location.entity";
+import { MealEntity } from "models/meal/meal.entity";
+import { UserLocationEntity } from "models/userLocations/user_location.entity";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +10,7 @@ import {
   UpdateDateColumn,
   BaseEntity,
   FindOptionsWhere,
+  OneToMany,
 } from "typeorm";
 
 @Entity({ name: "users" })
@@ -48,6 +52,12 @@ export class UserEntity extends BaseEntity {
   @UpdateDateColumn({ name: "updated_at", type: "timestamp with time zone" })
   updatedAt: Date;
 
+  // @OneToMany(() => UserLocationEntity, (userLocation) => userLocation.user)
+  // userLocations: UserLocationEntity[];
+
+  @OneToMany(() => MealEntity, (meal) => meal.cook)
+  meals: MealEntity[];
+
   static async findByParams(
     params: FindOptionsWhere<UserEntity>,
   ): Promise<UserEntity | null> {
@@ -73,9 +83,26 @@ export class UserEntity extends BaseEntity {
   ): Promise<UserEntity | null> {
     const user = await this.getRepository()
       .createQueryBuilder("user")
-      .leftJoinAndSelect("user.location", "location")
-      .where("user.id = :userId", { userId })
-      .getOne();
+      .leftJoin(UserLocationEntity, "ul", "ul.user_id = user.id")
+      .innerJoin(LocationEntity, "location", "location.id = ul.location_id")
+      .select([
+        "user.id AS id",
+        "user.email AS email",
+        "user.full_name AS full_name",
+        "user.is_complete AS is_complete",
+        "user.role AS role",
+        "user.bio AS bio",
+        "user.profile_image_url AS profile_image_url",
+        "user.phone_number AS phone_number",
+        "user.phone_number_country_code AS phone_number_country_code",
+        "location.state AS state",
+        "location.country AS country",
+        "location.city AS city",
+        "location.latitude AS latitude",
+        "location.longitude AS longitude",
+      ])
+      .where("user.id = :userId", { userId }) 
+      .getRawOne();
 
     return user;
   }

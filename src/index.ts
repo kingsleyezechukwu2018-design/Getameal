@@ -3,6 +3,11 @@ import appConfig from "./configs";
 import createLogger, { ModuleType } from "utils/logger";
 import { createDbConnection } from "models/dbConnection";
 import { populateLocation } from "jobs/one-off/populateLocation";
+import { UserEntity } from "models/users/users.entity";
+import { AuthEntity, LoginOption } from "models/auth/auth.entity";
+import { MealEntity } from "models/meal/meal.entity";
+import { DeliveryOption, QuantityUnit } from "models/meal/types_meal_entity";
+import { UserRole } from "controllers/users/types_users";
 
 const logger = createLogger(ModuleType.Entry, "ENTRY");
 
@@ -22,6 +27,14 @@ const { port, environment } = appConfig;
       `Connected to getAMeal database in ${environment} environment`,
       {},
     );
+
+    // const user = await UserEntity.find();
+    // const Auth = await AuthEntity.find();
+    // const meal = await MealEntity.find();
+
+    // console.log("user", user);
+    // console.log("Auth", Auth);
+    // console.log("meal", meal);
   } catch (error) {
     logger.error(
       `Error connecting to getAMeal database in ${environment} environment`,

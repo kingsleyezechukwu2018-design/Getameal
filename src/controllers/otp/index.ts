@@ -6,6 +6,8 @@ import { AllowedLoginOtpTypes, OtpType, VerifyOtpResponse } from "./types_otp";
 import { UserEntity } from "models/users/users.entity";
 import { generateToken } from "controllers/auth/util_auth";
 import { sendOtpEmail } from "configs/mailgun/emailTemplates";
+import { prepareLoginToken } from "utils";
+import { AuthEntity } from "models/auth/auth.entity";
 
 const logger = createLogger(ModuleType.Controller, "OTP");
 
@@ -72,9 +74,9 @@ export async function verifyOtp(
 
       if (user && user.isComplete) {
         logger.info("generating access token for user", { user });
-        const accessToken = generateToken({
-          data: { userId: user.id, role: user.role },
-        });
+        const userAuth = await AuthEntity.getAuthByParams({ userId: user.id });
+        const {accessToken} = await prepareLoginToken(user, userAuth);
+
         response = { accessToken, ...response };
       }
 

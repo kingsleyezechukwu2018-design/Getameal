@@ -130,11 +130,12 @@ export const getCooks = async ({
 
   const location = await UserLocationEntity.getLocationByUserId(user.id);
   if (!location) {
-    const error = new InternalError("User location not found");
-    logger.info("user location not found", { userId });
+    const error = new InternalError("Invalid location cordinates for user");
+    logger.info("Invalid location cordinates for user", { userId });
     throw error;
   }
 
+  logger.info("retrieving cooks by location", { userId, lat, lng, count });
   lat = lat || location.latitude;
   lng = lng || location.longitude;
   const cooks = await LocationEntity.getCooksByLocation(lat, lng, count);

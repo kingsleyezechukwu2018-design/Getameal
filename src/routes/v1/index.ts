@@ -6,6 +6,7 @@ import deviceTokenRoutes from "./deviceToken";
 import userRoutes from "./users";
 import cartRoutes from "./carts";
 import reviewsRoutes from "./reviews";
+import mealsRoutes from "./meals";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use("/device-token", deviceTokenRoutes);
 router.use("/users", userRoutes);
 router.use("/cart", cartRoutes);
 router.use("/reviews", reviewsRoutes);
+router.use("/meals", mealsRoutes);
 
 export { router as v1Routes };

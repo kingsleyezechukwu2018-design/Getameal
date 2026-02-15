@@ -16,10 +16,7 @@ export class OrderEntity extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ name: "order_id", type: "uuid" })
-  orderId: string;
-
-  @Column({ name: "meal_id", type: "uuid" })
+  @Column({ name: "meal_id", type: "varchar" })
   mealId: string;
 
   @Column({ name: "quantity", type: "int" })

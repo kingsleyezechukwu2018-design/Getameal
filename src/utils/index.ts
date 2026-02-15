@@ -1,8 +1,18 @@
 import { addItem, getItemByKey } from "configs/redis";
-import { PaginateParams, PaginateResult, PaginateResultMeta } from "./types";
+import {
+  IToken,
+  PaginateParams,
+  PaginateResult,
+  PaginateResultMeta,
+} from "./types";
 import { InternalError } from "configs/errors";
 import { UserEntity } from "models/users/users.entity";
+import { AuthEntity } from "models/auth/auth.entity";
+import { generateToken } from "controllers/auth/util_auth";
+import jwt from "jsonwebtoken";
+import appConfig from "configs";
 
+const { jwtRefreshTokenSecret, jwtRefreshTokenExpiresIn } = appConfig;
 export const handlePaginate = ({
   page,
   per_page,
@@ -43,7 +53,6 @@ export async function acquireLock(key: string, value: string) {
   return true;
 }
 
-
 export async function getUser(userId: string) {
   const user = await UserEntity.findByParams({ id: userId });
   if (!user) {
@@ -51,4 +60,33 @@ export async function getUser(userId: string) {
     throw error;
   }
   return user;
+}
+
+export async function prepareLoginToken(
+  user: UserEntity,
+  userAuth: AuthEntity,
+) {
+  const accessToken = generateToken({
+    data: { userId: user.id, role: user.role },
+  });
+
+  let refreshTokenExpiresAt;
+  if (userAuth.refreshToken) {
+    const { exp } = jwt.decode(userAuth.refreshToken) as IToken;
+
+    refreshTokenExpiresAt = exp;
+  }
+
+  const refreshToken =
+    !refreshTokenExpiresAt || refreshTokenExpiresAt < Date.now()
+      ? generateToken({
+          data: { userId: user.id, role: user.role },
+          secret: jwtRefreshTokenSecret,
+          expiresIn: jwtRefreshTokenExpiresIn,
+        })
+      : userAuth.refreshToken;
+
+  await AuthEntity.updateAuth({ id: userAuth.id }, { refreshToken });
+
+  return { accessToken, refreshToken };
 }
