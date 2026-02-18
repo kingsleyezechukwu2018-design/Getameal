@@ -1,4 +1,3 @@
-import fs from "fs";
 import cloudinary from "./cloudinary";
 
 export async function uploadImage({
@@ -12,24 +11,20 @@ export async function uploadImage({
   folderName: string;
   resourceType?: "image" | "video" | "raw";
 }) {
-  const streamUpload = () =>
-    new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        {
-          folder: folderName,
-          resource_type: resourceType,
-          ...(publicId && { public_id: publicId }),
-          overwrite: publicId ? true : false,
-        },
-        (error, result) => {
-          if (result) resolve(result);
-          else reject(error);
-        },
-      );
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: folderName,
+        resource_type: resourceType,
+        ...(publicId && { public_id: publicId }),
+        overwrite: !!publicId,
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      },
+    );
 
-      fs.createReadStream(file.buffer).pipe(stream);
-    });
-
-  const result: any = await streamUpload();
-  return result;
+    stream.end(file.buffer); 
+  });
 }
