@@ -119,8 +119,8 @@ export async function uploadMealImage({
 
     logger.info("Image uploaded successfully", { userId, result });
     return {
-      imageUrl: result.secure_url,
-      publicId: result.public_id,
+      imageUrl: (result as any).secure_url,
+      publicId: (result as any).public_id,
       metadata: result,
     };
   } catch (error) {
