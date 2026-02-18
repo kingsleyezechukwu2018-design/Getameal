@@ -1,12 +1,13 @@
-import { InternalError, RouteError } from "configs/errors";
+import { RouteError } from "configs/errors";
+import { uploadImage } from "configs/fileStorage";
 import { UserRole } from "controllers/users/types_users";
+import { sendNewMealPushNotification } from "jobs/queue";
 import { MealEntity } from "models/meal/meal.entity";
 import {
   Currency,
   DeliveryOption,
   QuantityUnit,
 } from "models/meal/types_meal_entity";
-import { UserEntity } from "models/users/users.entity";
 import { getUser, handlePaginate } from "utils";
 import createLogger, { ModuleType } from "utils/logger";
 
@@ -43,7 +44,18 @@ export async function addMeal(params: {
     ...params,
     remainingOrders: params.maxOrders,
   });
-  logger.info("Meal created successfully", { mealId: meal.id });
+  logger.info("Meal created successfully, sending push notification", { mealId: meal.id });
+
+  try {
+    await sendNewMealPushNotification({ mealId: meal.id, cookId: meal.cookId });
+  } catch (error) {
+    logger.error("Error sending push notification", {
+      mealId: meal.id,
+      cookId: meal.cookId,
+      error,
+    });
+    throw error;
+  }
 
   return meal;
 }
@@ -84,3 +96,38 @@ export async function getMealsByCook({
 
   return meals;
 }
+
+export async function uploadMealImage({
+  userId,
+  file,
+  publicId,
+}: {
+  userId: string;
+  file: Express.Multer.File;
+  publicId?: string;
+}) {
+  logger.info("Uploading image for meal", { userId });
+  await getUser(userId);
+
+  try {
+    const result = await uploadImage({
+      folderName: "meal-images",
+      file,
+      resourceType: "image",
+      ...(publicId && { publicId }),
+    });
+
+    logger.info("Image uploaded successfully", { userId, result });
+    return {
+      imageUrl: result.secure_url,
+      publicId: result.public_id,
+      metadata: result,
+    };
+  } catch (error) {
+    logger.error("Error uploading image for meal", { userId, error });
+    throw error;
+  }
+}
+
+//save to mealEntity like this
+//image: {imageUrl, publicId, metadata}

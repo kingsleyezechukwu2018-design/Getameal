@@ -8,6 +8,9 @@ import { LoginOption } from "models/auth/auth.entity";
 import { LocationEntity } from "models/location/location.entity";
 import { UserLocationEntity } from "models/userLocations/user_location.entity";
 import { completedUserLoginResponse } from "controllers";
+import fs from "fs";
+import cloudinary from "configs/fileStorage/cloudinary";
+import { uploadImage } from "configs/fileStorage";
 
 const logger = createLogger(ModuleType.Controller, "USERS");
 
@@ -137,4 +140,36 @@ export async function completeUserProfile({
   const response = await completedUserLoginResponse(user, loginOption);
 
   return response;
+}
+
+export async function uploadProfilePicture({
+  userId,
+  file,
+  publicId,
+}: {
+  userId: string;
+  file: Express.Multer.File;
+  publicId?: string;
+}) {
+  logger.info("Uploading profile picture for user", { userId });
+  await getUser(userId);
+
+  try {
+    const result = await uploadImage({
+      folderName: "profile-pictures",
+      file,
+      resourceType: "image",
+      ...(publicId && { publicId }),
+    });
+
+    logger.info("Image uploaded successfully", { userId, result });
+    return {
+      imageUrl: result.secure_url,
+      publicId: result.public_id,
+      metadata: result,
+    };
+  } catch (error) {
+    logger.error("Error uploading profile picture", { userId, error });
+    throw error;
+  }
 }

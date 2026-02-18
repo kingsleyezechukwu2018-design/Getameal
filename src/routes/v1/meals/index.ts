@@ -1,4 +1,9 @@
-import { addMeal, getAMeal, getMealsByCook } from "controllers/meal";
+import {
+  addMeal,
+  getAMeal,
+  getMealsByCook,
+  uploadMealImage,
+} from "controllers/meal";
 import { Router, Response, NextFunction } from "express";
 import { requireAuth, validateJwtToken } from "middlewares";
 import { validateInput } from "middlewares/validateInput";
@@ -8,8 +13,11 @@ import {
   addAMealByCookIdSchema,
   getAMealSchema,
   getMealsByCookIdSchema,
+  imageUploadSchema,
 } from "./validations.meals";
 import { ensureUserIsACook } from "middlewares/ensureUserIsACook";
+import { RouteError } from "configs/errors";
+import upload from "middlewares/uploadFile";
 
 const router = Router();
 router.use(validateJwtToken, requireAuth);
@@ -49,6 +57,27 @@ router.post(
     const { userId } = req;
 
     const result = await addMeal({ ...req.body, cookId: userId });
+    res.json(result);
+  }),
+);
+
+router.post(
+  "/upload-image",
+  upload.single("mealImage"),
+  validateInput(imageUploadSchema, "query"),
+  asyncWrapper(async (req: IRequest, res: Response) => {
+    if (!req.file) {
+      throw new RouteError("please upload a file", 400);
+    }
+
+    const { userId } = req;
+    console.log("public id: ", String(req.query.publicId));
+    const result = await uploadMealImage({
+      file: req.file,
+      userId,
+      publicId: String(req.query.publicId),
+    });
+
     res.json(result);
   }),
 );

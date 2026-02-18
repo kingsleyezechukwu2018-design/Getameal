@@ -1,10 +1,22 @@
 import Redis from "ioredis";
 import { RESERVE_STOCK_SCRIPT } from "./luaScript";
+import appConfig from "configs";
+import createLogger, { ModuleType } from "utils/logger";
 
-export const redis = new Redis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: 6379,
-  password: process.env.REDIS_PASSWORD || undefined,
+const logger = createLogger(ModuleType.Config, "REDIS");
+
+const { redisUrl } = appConfig;
+
+export const redis = new Redis(redisUrl, {
+  maxRetriesPerRequest: null,
+});
+
+redis.on("connect", () => {
+  logger.info("Redis connected", {});
+});
+
+redis.on("error", (err) => {
+  logger.error("Redis error:", { error: err });
 });
 
 export async function reserveStock(
@@ -25,7 +37,10 @@ export async function reserveStock(
   return result === 1;
 }
 
-export async function releaseStock(mealId: string, quantity: number): Promise<void> {
+export async function releaseStock(
+  mealId: string,
+  quantity: number,
+): Promise<void> {
   const key = `meal:${mealId}:reserved`;
   await redis.decrby(key, quantity);
 }
@@ -40,7 +55,11 @@ export async function getItemByKey(key: string): Promise<string | null> {
   return redis.get(key);
 }
 
-export async function addItem(key: string, value: string, ttlSeconds?: number): Promise<void> {
+export async function addItem(
+  key: string,
+  value: string,
+  ttlSeconds?: number,
+): Promise<void> {
   if (ttlSeconds) {
     await redis.set(key, value, "EX", ttlSeconds);
   } else {
@@ -52,6 +71,9 @@ export async function deleteItem(key: string): Promise<void> {
   await redis.del(key);
 }
 
-export async function decrementCount(key: string, quantity: number): Promise<void> {
+export async function decrementCount(
+  key: string,
+  quantity: number,
+): Promise<void> {
   await redis.decrby(key, quantity);
 }

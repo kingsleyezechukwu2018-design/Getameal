@@ -1,15 +1,11 @@
 import { RouteError } from "configs/errors";
-import {
-  addItem,
-  decrementCount,
-  deleteItem,
-  getItemByKey,
-  reserveStock,
-} from "configs/redis";
 import { MealEntity } from "models/meal/meal.entity";
-import { UserEntity } from "models/users/users.entity";
 import { CartItem } from "./carts_types";
-import { acquireLock, getUser } from "utils";
+import { getUser } from "utils";
+import { addMealItemToCart, getCustomerCart } from "./util_cart";
+import createLogger, { ModuleType } from "utils/logger";
+
+const logger = createLogger(ModuleType.Controller, "CARTS");
 
 export async function addMealToCart({
   customerId,
@@ -18,148 +14,148 @@ export async function addMealToCart({
   customerId: string;
   mealId: string;
 }) {
-  const customerLockKey = `lock:cart:${customerId}:meal:${mealId}`;
-  const mealLockKey = `lock:meal:${mealId}`;
   try {
-    const customer = await UserEntity.findByParams({ id: customerId });
-    if (!customer || !customer.isComplete) {
-      const error = new RouteError(
-        "Please complete your profile before adding items to the cart.",
-      );
-      throw error;
-    }
-
-    try {
-      //prevent race conditions: Acquire locks for customer
-      await acquireLock(customerLockKey, customerId);
-    } catch (error) {
-      return;
-    }
+    logger.info(`Adding meal to cart for customer`, { customerId, mealId });
+    const customer = await getUser(customerId);
 
     let meal = await MealEntity.getMeal({ id: mealId });
     if (!meal) {
+      logger.info(`Meal not found`, { mealId });
       const error = new RouteError("Meal not found.");
       throw error;
     }
 
-    //prevent race conditions: Acquire locks for meal
-    await acquireLock(mealLockKey, mealId);
-
-    let itemQuantity = 1;
-    const canReserve = await reserveStock(
-      meal.id,
-      meal.maxOrders,
-      itemQuantity,
-    );
-    if (!canReserve) {
-      throw new Error("Meal is out of stock.");
+    if (meal.availableDate < new Date()) {
+      logger.info(`Meal is not available for order`, { mealId });
+      const error = new RouteError("Meal is not available for order.");
+      throw error;
     }
 
-    const cartKey = `cart:${customer.id}`;
-    let cart = (await getItemByKey(cartKey)) as any;
-    cart = cart ? JSON.parse(cart) : [];
+    if (meal.remainingOrders <= 0) {
+      logger.info(`Meal is sold out`, { mealId });
+      const error = new RouteError("Meal is sold out.");
+      throw error;
+    }
 
-    const existingCartItem = (cart as CartItem[]).find(
+    const cart = await getCustomerCart(customer.id);
+
+    const cartItemIndex = (cart as CartItem[]).findIndex(
       (item: CartItem) => item.mealId === meal.id,
     );
 
-    if (existingCartItem) {
-      cart.quantity += itemQuantity;
+    if (cartItemIndex !== -1) {
+      (cart as CartItem[])[cartItemIndex].quantity += 1;
+      logger.info(`Incremented quantity for meal in cart`, { mealId });
     } else {
       (cart as CartItem[]).push({
         mealId: meal.id,
         cookId: meal.cookId,
-        quantity: itemQuantity,
+        quantity: 1,
         unitPrice: meal.price,
         availableDate: meal.availableDate,
       });
+      logger.info(`Added meal to cart`, { mealId });
     }
 
-    await addItem(cartKey, JSON.stringify(cart), 900); // 15min TTL
+    await addMealItemToCart({
+      customerId: customer.id,
+      cart: cart as CartItem[],
+    });
+    logger.info(`Cart updated for customer`, { customerId });
+    return "success";
   } catch (error) {
+    logger.error(`Error adding meal to cart: ${error}`);
     throw error;
-  } finally {
-    // Release lock
-    await Promise.all([deleteItem(customerLockKey), deleteItem(mealLockKey)]);
   }
 }
 
-export async function removeMealFromCart(customerId: string, mealId: string) {
-  await getUser(customerId);
+export async function removeMealFromCart({
+  customerId,
+  mealId,
+  shouldDelete,
+}: {
+  customerId: string;
+  mealId: string;
+  shouldDelete?: boolean;
+}) {
+  logger.info(`Removing meal from cart for customer`, { customerId, mealId });
+  const customer = await getUser(customerId);
 
   let meal = await MealEntity.getMeal({ id: mealId });
   if (!meal) {
+    logger.info(`Meal not found`, { mealId });
     const error = new RouteError("Meal not found.");
     throw error;
   }
 
-  const mealKey = `meal:${mealId}:reserved`;
-  const cartKey = `cart:${customerId}`;
-  let cart = (await getItemByKey(cartKey)) as any;
-  cart = cart ? JSON.parse(cart) : [];
-
-  const itemIndex = (cart as CartItem[]).findIndex(
-    (item: CartItem) => item.mealId === mealId,
-  );
-
-  if (itemIndex === -1) {
-    const error = new RouteError("Item not found in cart.");
+  const cart = await getCustomerCart(customer.id);
+  if (!cart.length) {
+    const error = new RouteError("Cart is empty.");
+    logger.info(`Cart is empty for customer`, { customerId, error });
     throw error;
   }
 
-  const quantity = cart[itemIndex].quantity;
-  cart = (cart as CartItem[]).splice(itemIndex, 1);
-  await addItem(cartKey, JSON.stringify(cart), 900);
-
-  await decrementCount(mealKey, quantity);
-  const current = await getItemByKey(mealKey);
-  if (Number(current) <= 0) {
-    await deleteItem(mealKey);
+  const cartItemIndex = (cart as CartItem[]).findIndex(
+    (item: CartItem) => item.mealId === meal.id,
+  );
+  if (cartItemIndex === -1) {
+    logger.info(`Meal not found in cart`, { mealId });
+    return cart;
   }
+
+  if (shouldDelete || (cart as CartItem[])[cartItemIndex].quantity <= 1) {
+    (cart as CartItem[]).splice(cartItemIndex, 1);
+    logger.info(`Removed meal from cart`, { mealId });
+  } else {
+    (cart as CartItem[])[cartItemIndex].quantity -= 1;
+    logger.info(`Decremented quantity for meal in cart`, { mealId });
+  }
+
+  await addMealItemToCart({
+    customerId: customer.id,
+    cart: cart as CartItem[],
+  });
+  logger.info(`Cart updated for customer`, { customerId });
+
+  return "success";
 }
 
-export async function getCartItems(customerId: string): Promise<CartItem[]> {
-  await getUser(customerId);
+export async function getCartItems(customerId: string) {
+  logger.info(`Fetching cart items for customer`, { customerId });
+  const customer = await getUser(customerId);
 
-  const cartKey = `cart:${customerId}`;
-  let cart = (await getItemByKey(cartKey)) as any;
-  cart = cart ? JSON.parse(cart) : [];
-  return cart as CartItem[];
+  const cart = await getCustomerCart(customer.id);
+  logger.info(
+    `Fetched ${Array.isArray(cart) ? cart.length : 0} items for customer`,
+    { customerId },
+  );
+  const mealIds = [...new Set((cart as CartItem[]).map((item) => item.mealId))];
+  const cartItems = await MealEntity.getMealsByIdsWithDetails(mealIds);
+  return cartItems;
 }
 
 export async function getCartItem(
   customerId: string,
   mealId: string,
 ): Promise<CartItem | null> {
-  await getUser(customerId);
+  logger.info(`Fetching cart item for customer`, { customerId, mealId });
+  const customer = await getUser(customerId);
 
   let meal = await MealEntity.getMeal({ id: mealId });
   if (!meal) {
+    logger.info(`Meal not found`, { mealId });
     const error = new RouteError("Meal not found.");
     throw error;
   }
 
-  const cartKey = `cart:${customerId}`;
-  let cart = (await getItemByKey(cartKey)) as any;
-  let item: CartItem | null = null;
-  if (!cart) {
-    return null;
-  }
+  const cart = await getCustomerCart(customer.id);
+  let item = (cart as CartItem[]).find(
+    (cartItem) => cartItem.mealId === mealId,
+  );
 
-  cart = cart ? JSON.parse(cart) : [];
-  item = (cart as CartItem[]).find((cartItem) => cartItem.mealId === mealId);
+  logger.info(
+    `Fetched cart item: ${item ? JSON.stringify(item) : "not found"}`,
+    { customerId, mealId },
+  );
   return item;
 }
-
-//TODO
-//remove cart item entity and cart entity definition and move all logic to redis, then create order from redis data when checkout
-//
-
-//ensure all items has been paid for before creating order, if not paid, release stock and remove from cart after 15min of adding to cart, also create a cron job to clear expired cart items and release stock every 15min
-
-//when user checkout, create order and order items from cart data, then clear cart data from redis and release stock if order creation failed
-
-//when user remove item from cart, release stock immediately and remove item from cart in redis
-
-//Q:
-//if uder add item to cart and not checkout before the order deadline, what do we do ?

@@ -18,3 +18,7 @@ export const completeUserSchema = Joi.object({
   phoneNumber: Joi.string().required(),
   countryCode: Joi.string().required(),
 });
+
+export const uploadProfilePictureUploadSchema = Joi.object({
+  publicId: Joi.string().optional(),
+});

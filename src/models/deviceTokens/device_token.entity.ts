@@ -50,4 +50,18 @@ export class DeviceTokenEntity extends BaseEntity {
   ): Promise<DeviceTokenEntity> {
     return this.getRepository().findOne({ where: params });
   }
+
+  static async getTokens(
+    offset: number,
+    limit: number,
+  ): Promise<string[]> {
+    const devicesTokens = await this.getRepository()
+      .createQueryBuilder("dt")
+      .select(["dt.token"])
+      .limit(limit)
+      .offset(offset)
+      .getMany();
+
+    return devicesTokens.map(device => device.token);
+  }
 }

@@ -3,6 +3,7 @@ import appConfig from "./configs";
 import createLogger, { ModuleType } from "utils/logger";
 import { createDbConnection } from "models/dbConnection";
 import { populateLocation } from "jobs/one-off/populateLocation";
+import "configs/notificationLibrary/firebase";
 import { UserEntity } from "models/users/users.entity";
 import { AuthEntity, LoginOption } from "models/auth/auth.entity";
 import { MealEntity } from "models/meal/meal.entity";

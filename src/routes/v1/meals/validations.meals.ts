@@ -34,3 +34,7 @@ export const addAMealByCookIdSchema = Joi.object({
     otherwise: Joi.forbidden(),
   }),
 });
+
+export const imageUploadSchema = Joi.object({
+  publicId: Joi.string().optional(),
+});

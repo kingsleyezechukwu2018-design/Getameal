@@ -6,6 +6,7 @@ export const addMealToCartSchema = Joi.object({
 
 export const removeMealFromCartSchema = Joi.object({
   mealId: Joi.string().required(),
+  shouldDelete: Joi.boolean().optional(),
 });
 
 export const getMealFromCartSchema = Joi.object({

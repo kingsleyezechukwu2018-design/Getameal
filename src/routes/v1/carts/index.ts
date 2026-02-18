@@ -20,7 +20,7 @@ const router = Router();
 router.use(validateJwtToken, requireAuth);
 
 router.post(
-  "/",
+  "/add",
   validateInput(addMealToCartSchema),
   asyncWrapper(async (req: IRequest, res: Response, _next: NextFunction) => {
     const { userId: customerId } = req;
@@ -35,8 +35,8 @@ router.post(
   validateInput(removeMealFromCartSchema),
   asyncWrapper(async (req: IRequest, res: Response, _next: NextFunction) => {
     const { userId: customerId } = req;
-    const { mealId } = req.body;
-    const result = await removeMealFromCart(customerId, mealId);
+    const { mealId, shouldDelete } = req.body;
+    const result = await removeMealFromCart({customerId, mealId, shouldDelete});
     res.json(result);
   }),
 );

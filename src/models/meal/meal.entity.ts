@@ -133,4 +133,17 @@ export class MealEntity extends BaseEntity {
 
     return meal;
   }
+
+  //get all meals in the mealId array, join user table to get cook details, join user location to get location details
+  static async getMealsByIdsWithDetails(mealIds: string[]): Promise<MealEntity[]> {
+    const meals = await this.getRepository()
+      .createQueryBuilder("meal")
+      .innerJoinAndSelect("meal.cook", "cook", "cook.id = meal.cookId")
+      .innerJoinAndSelect(UserLocationEntity, "ul", "ul.userId = cook.id")
+      .innerJoinAndSelect("ul.location", "location", "location.id = ul.locationId")
+      .where("meal.id IN (:...mealIds)", { mealIds })
+      .getRawMany();
+
+    return meals;
+  }
 }

@@ -19,6 +19,12 @@ const appConfig = {
   mailgunDomain: env.MAILGUN_DOMAIN,
   appEmail: env.MAILGUN_APP_FROM_EMAIL,
   mailgunBaseUrl: env.MAILGUN_BASE_URL,
+
+  cloudinaryCloudName: env.CLOUDINARY_CLOUD_NAME,
+  cloudinaryApiKey: env.CLOUDINARY_API_KEY,
+  cloudinaryApiSecret: env.CLOUDINARY_API_SECRET,
+  redisUrl: env.REDIS_URL || "redis://localhost:6379",
+
   //these hasn't been added to .env file yet
   googleOAuthClientId: env.GOOGLE_OAUTH_CLIENT_ID || "",
 };

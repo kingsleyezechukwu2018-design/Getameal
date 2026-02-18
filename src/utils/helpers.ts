@@ -19,7 +19,11 @@ export const axiosApi = async (
 };
 
 export const asyncWrapper = (
-  fn: (req: Request | IRequest, res: Response, next: NextFunction) => Promise<any>,
+  fn: (
+    req: Request | IRequest,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<any>,
 ) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
