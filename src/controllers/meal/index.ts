@@ -107,7 +107,7 @@ export async function uploadMealImage({
   publicId?: string;
 }) {
   logger.info("Uploading image for meal", { userId });
-  await getUser(userId);
+  // await getUser(userId);
 
   try {
     const result = await uploadImage({

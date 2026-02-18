@@ -20,6 +20,28 @@ import { RouteError } from "configs/errors";
 import upload from "middlewares/uploadFile";
 
 const router = Router();
+
+router.post(
+  "/upload-image",
+  upload.single("mealImage"),
+  validateInput(imageUploadSchema, "query"),
+  asyncWrapper(async (req: IRequest, res: Response) => {
+    if (!req.file) {
+      throw new RouteError("please upload a file", 400);
+    }
+
+    const { userId } = req;
+    console.log("public id: ", String(req.query.publicId));
+    const result = await uploadMealImage({
+      file: req.file,
+      userId,
+      publicId: String(req.query.publicId),
+    });
+
+    res.json(result);
+  }),
+);
+
 router.use(validateJwtToken, requireAuth);
 
 router.get(
@@ -61,25 +83,25 @@ router.post(
   }),
 );
 
-router.post(
-  "/upload-image",
-  upload.single("mealImage"),
-  validateInput(imageUploadSchema, "query"),
-  asyncWrapper(async (req: IRequest, res: Response) => {
-    if (!req.file) {
-      throw new RouteError("please upload a file", 400);
-    }
+// router.post(
+//   "/upload-image",
+//   upload.single("mealImage"),
+//   validateInput(imageUploadSchema, "query"),
+//   asyncWrapper(async (req: IRequest, res: Response) => {
+//     if (!req.file) {
+//       throw new RouteError("please upload a file", 400);
+//     }
 
-    const { userId } = req;
-    console.log("public id: ", String(req.query.publicId));
-    const result = await uploadMealImage({
-      file: req.file,
-      userId,
-      publicId: String(req.query.publicId),
-    });
+//     const { userId } = req;
+//     console.log("public id: ", String(req.query.publicId));
+//     const result = await uploadMealImage({
+//       file: req.file,
+//       userId,
+//       publicId: String(req.query.publicId),
+//     });
 
-    res.json(result);
-  }),
-);
+//     res.json(result);
+//   }),
+// );
 
 export default router;
